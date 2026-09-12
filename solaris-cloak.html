@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details - FashionXpress</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="logo" style="margin-bottom: 20px">FashionXpress</div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" aria-hidden="true"></div>
+    
+    <nav>
+        <a href="index.html" class="logo">FashionXpress</a>
+
+        <button class="mobile-menu-btn" aria-label="Toggle Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-actions">
+            <a href="collections.html" class="back-link">← Back to Gallery</a>
+            <a href="started.html">
+                <button class="nav-btn" aria-label="Get Started">Get Started</button>
+            </a>
+            <button id="theme-toggle" class="theme-btn">🌓</button>
+        </div>
+    </nav>
+
+    <div class="nav-spacer" style="height: 80px;"></div>
+
+
+    <section class="details-container">
+        <div class="details-grid">
+            <div class="item-preview-card">
+                <img src="./images/collection3.jpg" alt="Collection Item">
+            </div>
+
+            <!-- <div class="item-preview-card video-card">
+                <video autoplay muted loop playsinline class="preview-video">
+                    <source src="./video/solaris-bloom.mp4" type="video/mp4">
+                    <img src="./images/collection3.jpg" alt="Solaris Cloak">
+                </video>
+                <div class="video-overlay-glow"></div>
+            </div> -->
+
+            <div class="item-info">
+                <span class="section-badge">Ultra Rare</span>
+                <h1>Solaris Cloak</h1>
+                <p class="price">3.2 ETH</p>
+                <p class="description">Utilizing solar-cell fabric technology, this cloak glows with the energy of the virtual sun.</p>
+                <div class="rarity-container">
+                    <div class="rarity-header">
+                        <span>Rarity Level</span>
+                        <span id="rarity-text">Ultra Rare</span>
+                    </div>
+                    <div class="rarity-bar">
+                        <div class="rarity-fill" id="rarity-fill" style="width: 95%;"></div>
+                    </div>
+                </div>
+                <a href="minting-station.html?item=solaris" class="btn-primary gold-shimmer-btn" style="width: 100%; max-width: none;">
+                    <span class="btn-text">Mint Now</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

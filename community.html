@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Forum | FashionXpress</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Community Page Specific Styles */
+        .community-page {
+            background: linear-gradient(135deg, #0a0a0f 0%, #151522 100%);
+            min-height: 100vh;
+        }
+
+        .community-hero {
+            padding: 120px 5% 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .community-hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.15) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+        }
+
+        .community-hero::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
+            bottom: -200px;
+            right: -200px;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+        }
+
+        .community-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 1;
+        }
+
+        .community-hero p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .community-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 3rem auto;
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+
+        .community-stat {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            min-width: 150px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .community-stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .community-stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .community-search {
+            max-width: 600px;
+            margin: 2rem auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.2rem;
+        }
+
+        .search-tags {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-tag {
+            padding: 0.5rem 1.2rem;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50px;
+            color: #667eea;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-tag:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .search-tag.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Community Layout */
+        .community-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            padding: 2rem 5% 8rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .community-container {
+                grid-template-columns: 1fr 350px;
+            }
+        }
+
+        /* Forum Section */
+        .forum-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: white;
+            margin: 0;
+        }
+
+        .new-thread-btn {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .new-thread-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .thread-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .thread-filter {
+            padding: 0.6rem 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .thread-filter.active {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .thread-filter:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Thread Cards */
+        .thread-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .thread-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            padding: 1.8rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thread-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(102, 126, 234, 0.3);
+            background: rgba(102, 126, 234, 0.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .thread-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .thread-card:hover::before {
+            opacity: 1;
+        }
+
+        .thread-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .thread-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            flex-shrink: 0;
+        }
+
+        .thread-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thread-info {
+            flex: 1;
+        }
+
+        .thread-title {
+            font-size: 1.2rem;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .thread-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .thread-author {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .thread-category {
+            padding: 0.2rem 0.8rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #667eea;
+        }
+
+        .thread-preview {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+            font-size: 0.95rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .thread-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .thread-stats {
+            display: flex;
+            gap: 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .thread-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .thread-stat i {
+            color: #667eea;
+        }
+
+        .thread-badge {
+            padding: 0.3rem 0.8rem;
+            background: rgba(76, 209, 55, 0.1);
+            border: 1px solid rgba(76, 209, 55, 0.3);
+            border-radius: 12px;
+            color: #4cd137;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .thread-badge.hot {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+        }
+
+        /* Sidebar */
+        .community-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .sidebar-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+        }
+
+        .sidebar-card h3 {
+            font-size: 1.3rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-card h3 i {
+            color: #667eea;
+        }
+
+        /* Events */
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .event-card {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .event-card:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: rgba(102, 126, 234, 0.2);
+            transform: translateX(5px);
+        }
+
+        .event-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            padding: 0.8rem;
+            min-width: 60px;
+            flex-shrink: 0;
+        }
+
+        .event-day {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #667eea;
+            line-height: 1;
+        }
+
+        .event-month {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .event-info {
+            flex: 1;
+        }
+
+        .event-title {
+            font-size: 1rem;
+            color: white;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .event-details {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.8rem;
+        }
+
+        .event-rsvp {
+            padding: 0.4rem 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            color: #667eea;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: fit-content;
+        }
+
+        .event-rsvp:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Top Users */
+        .top-users-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .user-card:hover {
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(5px);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            position: relative;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-rank {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: #667eea;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border: 2px solid var(--card-bg);
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 0.95rem;
+            color: white;
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .user-stats {
+            display: flex;
+            gap: 0.8rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .user-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Resources */
+        .resources-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .resource-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(5px);
+        }
+
+        .resource-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .resource-info h4 {
+            font-size: 0.95rem;
+            color: white;
+            margin-bottom: 0.2rem;
+        }
+
+        .resource-info p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Pagination */
+        .forum-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+        }
+
+        .pagination-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .pagination-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        /* Modal for New Thread */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h2 {
+            color: white;
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #ff6b6b;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23667eea' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px;
+            padding-right: 3rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            padding: 0.8rem 1.8rem;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            color: var(--text-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-border);
+        }
+
+        .btn-primary {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .community-stats {
+                gap: 1rem;
+            }
+
+            .community-stat {
+                min-width: 120px;
+                padding: 1rem;
+            }
+
+            .community-stat-number {
+                font-size: 2rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .new-thread-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .thread-filters {
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+
+            .thread-card {
+                padding: 1.5rem;
+            }
+
+            .thread-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .thread-avatar {
+                width: 40px;
+                height: 40px;
+            }
+
+            .thread-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .thread-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .modal-card {
+                padding: 1.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions button {
+                width: 100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .thread-card, .event-card, .user-card, .resource-item {
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .thread-card:nth-child(1) { animation-delay: 0.1s; }
+        .thread-card:nth-child(2) { animation-delay: 0.2s; }
+        .thread-card:nth-child(3) { animation-delay: 0.3s; }
+        .thread-card:nth-child(4) { animation-delay: 0.4s; }
+        .thread-card:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body class="community-page">
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="logo" style="margin-bottom: 20px;">FashionXpress</div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" aria-hidden="true"></div>
+
+    <nav>
+        <a href="index.html" class="logo">FashionXpress</a>
+
+        <button class="mobile-menu-btn" aria-label="Toggle Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-actions">
+            <a href="forum.html">
+                <button class="nav-btn" aria-label="Browse Forum">Forum</button>
+            </a>
+            <a href="collections.html">
+                <button class="nav-btn" aria-label="View Collections">Collections</button>
+            </a>
+            <button id="theme-toggle" class="theme-btn">🌓</button>
+        </div>
+    </nav>
+
+    <div class="nav-spacer" style="height: 80px;"></div>
+
+    <section class="community-hero">
+        <h1>FashionXpress Community</h1>
+        <p>Connect, collaborate, and grow with fashion innovators worldwide. Share ideas, get feedback, and build your network in the digital fashion revolution.</p>
+        
+        <div class="community-stats">
+            <div class="community-stat">
+                <div class="community-stat-number">24.7K+</div>
+                <div class="community-stat-label">Active Members</div>
+            </div>
+            <div class="community-stat">
+                <div class="community-stat-number">156.2K</div>
+                <div class="community-stat-label">Discussions</div>
+            </div>
+            <div class="community-stat">
+                <div class="community-stat-number">42</div>
+                <div class="community-stat-label">Online Now</div>
+            </div>
+        </div>
+
+        <div class="community-search">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search discussions, tutorials, or members..." id="forum-search">
+            </div>
+            <div class="search-tags">
+                <span class="search-tag active">All Topics</span>
+                <span class="search-tag">Design Help</span>
+                <span class="search-tag">Technical</span>
+                <span class="search-tag">Showcase</span>
+                <span class="search-tag">Marketplace</span>
+                <span class="search-tag">Announcements</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="community-container">
+        <!-- Main Forum Section -->
+        <main class="forum-section">
+            <div class="section-header">
+                <h2>Latest Discussions</h2>
+                <button class="new-thread-btn" id="new-thread-btn">
+                    <i class="fas fa-plus"></i> New Discussion
+                </button>
+            </div>
+
+            <div class="thread-filters">
+                <span class="thread-filter active">All</span>
+                <span class="thread-filter">Popular</span>
+                <span class="thread-filter">Unanswered</span>
+                <span class="thread-filter">Recent</span>
+                <span class="thread-filter">Following</span>
+            </div>
+
+            <div class="thread-list" id="thread-list">
+                <!-- Threads will be populated by JavaScript -->
+            </div>
+
+            <div class="forum-pagination">
+                <span class="pagination-btn active">1</span>
+                <span class="pagination-btn">2</span>
+                <span class="pagination-btn">3</span>
+                <span class="pagination-btn">4</span>
+                <span class="pagination-btn">5</span>
+                <span class="pagination-btn">→</span>
+            </div>
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="community-sidebar">
+            <!-- Upcoming Events -->
+            <div class="sidebar-card">
+                <h3><i class="fas fa-calendar-alt"></i> Upcoming Events</h3>
+                <div class="events-list" id="events-list">
+                    <!-- Events will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Top Contributors -->
+            <div class="sidebar-card">
+                <h3><i class="fas fa-trophy"></i> Top Contributors</h3>
+                <div class="top-users-list" id="top-users-list">
+                    <!-- Users will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Resources -->
+            <div class="sidebar-card">
+                <h3><i class="fas fa-book"></i> Resources</h3>
+                <div class="resources-list">
+                    <div class="resource-item" onclick="window.location.href='academy.html'">
+                        <div class="resource-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="resource-info">
+                            <h4>FashionXpress Academy</h4>
+                            <p>Free courses & tutorials</p>
+                        </div>
+                    </div>
+                    <div class="resource-item" onclick="window.open('https://docs.fashionxpress.com', '_blank')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="resource-info">
+                            <h4>API Documentation</h4>
+                            <p>Developer resources</p>
+                        </div>
+                    </div>
+                    <div class="resource-item" onclick="window.open('https://github.com/fashionxpress', '_blank')">
+                        <div class="resource-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="resource-info">
+                            <h4>GitHub Repositories</h4>
+                            <p>Open-source projects</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- New Thread Modal -->
+    <div class="modal-overlay" id="new-thread-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Start New Discussion</h2>
+                <button class="close-modal" id="close-thread-modal">&times;</button>
+            </div>
+            
+            <form id="new-thread-form">
+                <div class="form-group">
+                    <label for="thread-title">Discussion Title</label>
+                    <input type="text" id="thread-title" class="form-input" placeholder="What would you like to discuss?" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="thread-category">Category</label>
+                    <select id="thread-category" class="form-select" required>
+                        <option value="">Select a category</option>
+                        <option value="design">Design & Creation</option>
+                        <option value="technical">Technical Support</option>
+                        <option value="showcase">Showcase Your Work</option>
+                        <option value="marketplace">Marketplace</option>
+                        <option value="feedback">Feedback & Ideas</option>
+                        <option value="announcements">Announcements</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="thread-content">Content</label>
+                    <textarea id="thread-content" class="form-textarea" placeholder="Describe your discussion in detail..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="thread-tags">Tags (comma separated)</label>
+                    <input type="text" id="thread-tags" class="form-input" placeholder="digital-fashion, 3d-modeling, blockchain, etc.">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancel-thread">Cancel</button>
+                    <button type="submit" class="btn-primary">Post Discussion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Community</h4>
+                <a href="community.html">Forum Home</a>
+                <a href="#" id="community-guidelines">Community Guidelines</a>
+                <a href="#" id="moderation-policy">Moderation Policy</a>
+                <a href="contact.html">Contact Moderators</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="#" id="faq-link">FAQ</a>
+                <a href="#" id="help-center">Help Center</a>
+                <a href="#" id="report-issue">Report Issue</a>
+                <a href="#" id="suggest-feature">Suggest Feature</a>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <a href="#" onclick="window.open('https://discord.gg/fashionxpress', '_blank')">Discord</a>
+                <a href="#" onclick="window.open('https://twitter.com/fashionxpress', '_blank')">Twitter</a>
+                <a href="#" onclick="window.open('https://instagram.com/fashionxpress', '_blank')">Instagram</a>
+                <a href="#" onclick="window.open('https://youtube.com/fashionxpress', '_blank')">YouTube</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Code of Conduct</a>
+                <a href="#">Cookie Policy</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 FashionXpress Community. Join the conversation and shape the future of digital fashion.</p>
+        </div>
+    </footer>
+
+    <script src="script.js" defer></script>
+    <script>
+        // Community Forum JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const threadList = document.getElementById('thread-list');
+            const eventsList = document.getElementById('events-list');
+            const topUsersList = document.getElementById('top-users-list');
+            const newThreadBtn = document.getElementById('new-thread-btn');
+            const newThreadModal = document.getElementById('new-thread-modal');
+            const closeThreadModal = document.getElementById('close-thread-modal');
+            const cancelThreadBtn = document.getElementById('cancel-thread');
+            const newThreadForm = document.getElementById('new-thread-form');
+            const forumSearch = document.getElementById('forum-search');
+            const searchTags = document.querySelectorAll('.search-tag');
+            const threadFilters = document.querySelectorAll('.thread-filter');
+            const paginationBtns = document.querySelectorAll('.pagination-btn');
+
+            // Sample Data
+            const threads = [
+                {
+                    id: 1,
+                    title: "How do I properly price my first digital collection?",
+                    author: "DigitalDesigner",
+                    authorAvatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
+                    category: "marketplace",
+                    preview: "I'm about to launch my first collection of 10 pieces but I'm struggling with pricing. Should I go by rarity, time invested, or market comparison? Looking for advice from experienced creators...",
+                    replies: 24,
+                    views: 156,
+                    likes: 42,
+                    timestamp: "2 hours ago",
+                    isHot: true,
+                    isNew: false
+                },
+                {
+                    id: 2,
+                    title: "Blender vs Maya for fashion design - which is better?",
+                    author: "3DArtist",
+                    authorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+                    category: "technical",
+                    preview: "I'm transitioning from physical to digital fashion design and need to choose my main 3D software. Looking for opinions from those who have experience with both for garment creation...",
+                    replies: 18,
+                    views: 203,
+                    likes: 37,
+                    timestamp: "5 hours ago",
+                    isHot: true,
+                    isNew: false
+                },
+                {
+                    id: 3,
+                    title: "Showcase: My 'Neon Dreams' collection - now live!",
+                    author: "LunaCouture",
+                    authorAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+                    category: "showcase",
+                    preview: "After 6 months of work, I'm proud to present my first complete collection! All pieces are AR-ready and feature reactive materials that change with ambient light. Would love your feedback...",
+                    replies: 56,
+                    views: 421,
+                    likes: 89,
+                    timestamp: "1 day ago",
+                    isHot: true,
+                    isNew: true
+                },
+                {
+                    id: 4,
+                    title: "Blockchain gas fees are killing small creators",
+                    author: "CryptoCreator",
+                    authorAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+                    category: "feedback",
+                    preview: "I spent more on gas fees last month than I made from sales. How are other small creators handling this? Should we move to layer 2 solutions or wait for improvements?",
+                    replies: 42,
+                    views: 312,
+                    likes: 67,
+                    timestamp: "2 days ago",
+                    isHot: false,
+                    isNew: false
+                },
+                {
+                    id: 5,
+                    title: "Looking for beta testers for new AR fitting room plugin",
+                    author: "TechInnovator",
+                    authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
+                    category: "announcements",
+                    preview: "We've developed a new Unity plugin that makes AR try-ons 3x faster. Looking for 10 designers to test it for free. Requirements: Basic Unity knowledge and a collection ready for testing...",
+                    replies: 31,
+                    views: 198,
+                    likes: 45,
+                    timestamp: "3 days ago",
+                    isHot: false,
+                    isNew: true
+                }
+            ];
+
+            const events = [
+                {
+                    id: 1,
+                    title: "Virtual Fashion Week 2026",
+                    date: "15 JAN",
+                    details: "Live showcase of digital collections from top creators",
+                    rsvpCount: 1242
+                },
+                {
+                    id: 2,
+                    title: "AMA with Vogue Digital Editor",
+                    date: "22 JAN",
+                    details: "Ask anything about digital fashion journalism",
+                    rsvpCount: 876
+                },
+                {
+                    id: 3,
+                    title: "Blender for Fashion Workshop",
+                    date: "29 JAN",
+                    details: "Free workshop for beginners",
+                    rsvpCount: 543
+                },
+                {
+                    id: 4,
+                    title: "Community Town Hall",
+                    date: "5 FEB",
+                    details: "Discuss platform improvements",
+                    rsvpCount: 321
+                }
+            ];
+
+            const topUsers = [
+                {
+                    id: 1,
+                    name: "ElenaVance",
+                    role: "Lead Designer",
+                    avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=face",
+                    rank: 1,
+                    threads: 142,
+                    likes: 2456
+                },
+                {
+                    id: 2,
+                    name: "MarcusFashion",
+                    role: "Top Collector",
+                    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+                    rank: 2,
+                    threads: 89,
+                    likes: 1876
+                },
+                {
+                    id: 3,
+                    name: "SarahDigital",
+                    role: "Moderator",
+                    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop",
+                    rank: 3,
+                    threads: 203,
+                    likes: 3210
+                },
+                {
+                    id: 4,
+                    name: "TechInnovator",
+                    role: "Developer",
+                    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
+                    rank: 4,
+                    threads: 67,
+                    likes: 1543
+                }
+            ];
+
+            // Initialize Content
+            function initContent() {
+                renderThreads(threads);
+                renderEvents(events);
+                renderTopUsers(topUsers);
+            }
+
+            // Render Threads
+            function renderThreads(threadsArray) {
+                threadList.innerHTML = '';
+                
+                threadsArray.forEach(thread => {
+                    const threadCard = document.createElement('div');
+                    threadCard.className = 'thread-card';
+                    threadCard.dataset.id = thread.id;
+                    threadCard.dataset.category = thread.category;
+                    
+                    threadCard.innerHTML = `
+                        <div class="thread-header">
+                            <div class="thread-avatar">
+                                <img src="${thread.authorAvatar}" alt="${thread.author}">
+                            </div>
+                            <div class="thread-info">
+                                <h3 class="thread-title">${thread.title}</h3>
+                                <div class="thread-meta">
+                                    <span class="thread-author">@${thread.author}</span>
+                                    <span>•</span>
+                                    <span>${thread.timestamp}</span>
+                                    <span class="thread-category">${getCategoryName(thread.category)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="thread-preview">${thread.preview}</p>
+                        <div class="thread-footer">
+                            <div class="thread-stats">
+                                <span class="thread-stat">
+                                    <i class="fas fa-comment"></i> ${thread.replies}
+                                </span>
+                                <span class="thread-stat">
+                                    <i class="fas fa-eye"></i> ${thread.views}
+                                </span>
+                                <span class="thread-stat">
+                                    <i class="fas fa-heart"></i> ${thread.likes}
+                                </span>
+                            </div>
+                            ${thread.isHot ? '<span class="thread-badge hot">🔥 Hot</span>' : ''}
+                            ${thread.isNew ? '<span class="thread-badge">✨ New</span>' : ''}
+                        </div>
+                    `;
+                    
+                    threadCard.addEventListener('click', () => {
+                        // In a real app, this would navigate to thread detail page
+                        alert(`Viewing thread: ${thread.title}\n\nThis would navigate to a detailed thread view in a complete implementation.`);
+                    });
+                    
+                    threadList.appendChild(threadCard);
+                });
+            }
+
+            // Render Events
+            function renderEvents(eventsArray) {
+                eventsList.innerHTML = '';
+                
+                eventsArray.forEach(event => {
+                    const eventCard = document.createElement('div');
+                    eventCard.className = 'event-card';
+                    eventCard.dataset.id = event.id;
+                    
+                    eventCard.innerHTML = `
+                        <div class="event-date">
+                            <span class="event-day">${event.date.split(' ')[0]}</span>
+                            <span class="event-month">${event.date.split(' ')[1]}</span>
+                        </div>
+                        <div class="event-info">
+                            <h4 class="event-title">${event.title}</h4>
+                            <p class="event-details">${event.details}</p>
+                            <button class="event-rsvp" data-id="${event.id}">
+                                <i class="fas fa-calendar-plus"></i> RSVP (${event.rsvpCount})
+                            </button>
+                        </div>
+                    `;
+                    
+                    eventsList.appendChild(eventCard);
+                });
+            }
+
+            // Render Top Users
+            function renderTopUsers(usersArray) {
+                topUsersList.innerHTML = '';
+                
+                usersArray.forEach(user => {
+                    const userCard = document.createElement('div');
+                    userCard.className = 'user-card';
+                    userCard.dataset.id = user.id;
+                    
+                    userCard.innerHTML = `
+                        <div class="user-avatar">
+                            <img src="${user.avatar}" alt="${user.name}">
+                            <span class="user-rank">${user.rank}</span>
+                        </div>
+                        <div class="user-info">
+                            <h4 class="user-name">${user.name}</h4>
+                            <p class="user-role">${user.role}</p>
+                            <div class="user-stats">
+                                <span class="user-stat">
+                                    <i class="fas fa-comment"></i> ${user.threads}
+                                </span>
+                                <span class="user-stat">
+                                    <i class="fas fa-heart"></i> ${user.likes}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    userCard.addEventListener('click', () => {
+                        // In a real app, this would navigate to user profile
+                        alert(`Viewing profile: ${user.name}\n\nThis would navigate to a user profile page in a complete implementation.`);
+                    });
+                    
+                    topUsersList.appendChild(userCard);
+                });
+            }
+
+            // Helper Functions
+            function getCategoryName(category) {
+                const categories = {
+                    'design': 'Design',
+                    'technical': 'Technical',
+                    'showcase': 'Showcase',
+                    'marketplace': 'Marketplace',
+                    'feedback': 'Feedback',
+                    'announcements': 'Announcement'
+                };
+                return categories[category] || 'General';
+            }
+
+            // Modal Controls
+            newThreadBtn.addEventListener('click', () => {
+                newThreadModal.classList.add('active');
+            });
+
+            closeThreadModal.addEventListener('click', () => {
+                newThreadModal.classList.remove('active');
+            });
+
+            cancelThreadBtn.addEventListener('click', () => {
+                newThreadModal.classList.remove('active');
+            });
+
+            // Close modal when clicking outside
+            newThreadModal.addEventListener('click', (e) => {
+                if (e.target === newThreadModal) {
+                    newThreadModal.classList.remove('active');
+                }
+            });
+
+            // Form Submission
+            newThreadForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const title = document.getElementById('thread-title').value;
+                const category = document.getElementById('thread-category').value;
+                const content = document.getElementById('thread-content').value;
+                const tags = document.getElementById('thread-tags').value;
+                
+                // In a real app, this would send to backend
+                alert(`New discussion created!\n\nTitle: ${title}\nCategory: ${category}\n\nThis would be saved to a database in a complete implementation.`);
+                
+                // Reset form and close modal
+                newThreadForm.reset();
+                newThreadModal.classList.remove('active');
+                
+                // Show success message
+                showNotification('Discussion posted successfully! It will appear in the forum shortly.');
+            });
+
+            // Search Functionality
+            forumSearch.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredThreads = threads.filter(thread => 
+                    thread.title.toLowerCase().includes(searchTerm) ||
+                    thread.preview.toLowerCase().includes(searchTerm) ||
+                    thread.author.toLowerCase().includes(searchTerm)
+                );
+                renderThreads(filteredThreads);
+            });
+
+            // Search Tag Filters
+            searchTags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    searchTags.forEach(t => t.classList.remove('active'));
+                    tag.classList.add('active');
+                    
+                    const filterText = tag.textContent;
+                    if (filterText === 'All Topics') {
+                        renderThreads(threads);
+                    } else {
+                        // Filter logic would go here
+                        showNotification(`Filtering by: ${filterText}`);
+                    }
+                });
+            });
+
+            // Thread Filters
+            threadFilters.forEach(filter => {
+                filter.addEventListener('click', () => {
+                    threadFilters.forEach(f => f.classList.remove('active'));
+                    filter.classList.add('active');
+                    
+                    const filterType = filter.textContent;
+                    let filteredThreads = [...threads];
+                    
+                    switch(filterType) {
+                        case 'Popular':
+                            filteredThreads.sort((a, b) => b.likes - a.likes);
+                            break;
+                        case 'Unanswered':
+                            filteredThreads = threads.filter(t => t.replies === 0);
+                            break;
+                        case 'Recent':
+                            // Already sorted by timestamp
+                            break;
+                        case 'Following':
+                            showNotification('Showing threads from users you follow');
+                            break;
+                    }
+                    
+                    renderThreads(filteredThreads);
+                });
+            });
+
+            // Pagination
+            paginationBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!btn.classList.contains('active')) {
+                        paginationBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        showNotification(`Loading page ${btn.textContent}...`);
+                    }
+                });
+            });
+
+            // Event RSVP
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.event-rsvp')) {
+                    const eventId = e.target.closest('.event-rsvp').dataset.id;
+                    const event = events.find(ev => ev.id == eventId);
+                    
+                    if (event) {
+                        e.target.closest('.event-rsvp').innerHTML = `<i class="fas fa-check"></i> RSVP Confirmed`;
+                        e.target.closest('.event-rsvp').style.background = 'rgba(76, 209, 55, 0.2)';
+                        e.target.closest('.event-rsvp').style.borderColor = 'rgba(76, 209, 55, 0.3)';
+                        e.target.closest('.event-rsvp').style.color = '#4cd137';
+                        
+                        showNotification(`You've RSVP'd to: ${event.title}`);
+                    }
+                }
+            });
+
+            // Footer Links
+            document.getElementById('community-guidelines').addEventListener('click', (e) => {
+                e.preventDefault();
+                showModal('Community Guidelines', `
+                    <h3>Our Community Guidelines</h3>
+                    <p>Welcome to the FashionXpress Community! To ensure a positive experience for everyone, please follow these guidelines:</p>
+                    <ul>
+                        <li><strong>Be respectful</strong> - Treat all members with kindness</li>
+                        <li><strong>No spam</strong> - Keep discussions relevant</li>
+                        <li><strong>Share knowledge</strong> - Help others learn</li>
+                        <li><strong>Give credit</strong> - Always attribute work</li>
+                        <li><strong>Report issues</strong> - Help us keep the community safe</li>
+                    </ul>
+                `);
+            });
+
+            // Notification System
+            function showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? 'rgba(76, 209, 55, 0.9)' : 'rgba(255, 107, 107, 0.9)'};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 12px;
+                    z-index: 10001;
+                    animation: slideIn 0.3s ease;
+                    backdrop-filter: blur(10px);
+                    border: 1px solid ${type === 'success' ? 'rgba(76, 209, 55, 0.3)' : 'rgba(255, 107, 107, 0.3)'};
+                    max-width: 300px;
+                `;
+                
+                notification.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+
+            // Modal for informational content
+            function showModal(title, content) {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay active';
+                modal.innerHTML = `
+                    <div class="modal-card">
+                        <div class="modal-header">
+                            <h2>${title}</h2>
+                            <button class="close-modal" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                        </div>
+                        <div style="color: rgba(255,255,255,0.8); line-height: 1.6;">
+                            ${content}
+                        </div>
+                        <div class="form-actions" style="margin-top: 2rem;">
+                            <button class="btn-primary" onclick="this.closest('.modal-overlay').remove()">Close</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+            }
+
+            // Add CSS for notifications
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Footer link handlers
+            const footerLinks = {
+                'faq-link': 'Frequently Asked Questions',
+                'help-center': 'Help Center',
+                'report-issue': 'Report an Issue',
+                'suggest-feature': 'Suggest a Feature',
+                'moderation-policy': 'Moderation Policy'
+            };
+
+            Object.keys(footerLinks).forEach(id => {
+                document.getElementById(id)?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showModal(footerLinks[id], `
+                        <p>This feature would open a detailed page about "${footerLinks[id]}" in a complete implementation.</p>
+                        <p>For now, please contact support@fashionxpress.com for assistance.</p>
+                    `);
+                });
+            });
+
+            // Initialize
+            initContent();
+            
+            // Add some sample threads on page load
+            setTimeout(() => {
+                showNotification('Welcome to the FashionXpress Community!', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

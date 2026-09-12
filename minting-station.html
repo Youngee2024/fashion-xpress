@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minting Station - Solaris</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* --- Mobile Adjustments --- */
+@media (max-width: 480px) {
+    /* Scale down the scanning container */
+    .wireframe-container {
+        width: 80vw; /* Use 80% of the screen width */
+        height: 60vh; /* Scale height proportionally */
+    }
+
+    /* Adjust the Wallet Popup */
+    .wallet-card {
+        width: 90%;
+        padding: 20px;
+        margin: 0 5%;
+    }
+
+    /* Stack the post-mint buttons vertically */
+    #post-mint-actions {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        gap: 15px !important;
+    }
+
+    /* Make buttons full width on mobile */
+    .btn-primary {
+        width: 80% !important;
+        text-align: center;
+    }
+
+    /* Hide the custom cursor on mobile (it's annoying on touchscreens) */
+    .cursor, .cursor-follower {
+        display: none !important;
+    }
+    
+    html, body {
+        cursor: auto !important; /* Bring back the touch pointer */
+    }
+
+    .status-text {
+        font-size: 0.9rem;
+        text-align: center;
+        padding: 0 20px;
+    }
+}
+        .minting-wrap {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #050505;
+        }
+        .wireframe-container {
+            width: 300px;
+            height: 400px;
+            border: 1px dashed #bf953f;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        .scanning-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #fcf6ba;
+            box-shadow: 0 0 15px #fcf6ba;
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+        .status-text {
+            margin-top: 30px;
+            font-family: monospace;
+            color: #bf953f;
+            letter-spacing: 2px;
+        }
+        .success-glow {
+            color: #fff !important;
+            text-shadow: 0 0 10px #bf953f, 0 0 20px #fcf6ba;
+            font-size: 1.5rem;
+            transition: all 0.5s ease;
+        }
+        #wallet-overlay {
+            z-index: 1000;
+        }
+        .wallet-card {
+            position: relative;
+            z-index: 1001; /* Higher than the overlay */
+        }
+        #approve-btn {
+            cursor: pointer;
+            position: relative;
+            z-index: 1002; /* Highest priority for clicks */
+        }
+        /* 1. Force the custom cursor to be on top of everything */
+.cursor, .cursor-follower {
+    z-index: 9999 !important;
+    pointer-events: none !important; /* This allows you to click buttons 'through' the cursor */
+}
+
+/* 2. Hide the default windows cursor so yours is the only one visible */
+html, body {
+    cursor: none !important;
+}
+
+/* 3. Ensure the wallet card itself allows mouse interaction */
+.wallet-card {
+    pointer-events: all;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#post-mint-actions .btn-primary {
+    padding: 12px 25px;
+    font-size: 0.9rem;
+    cursor: none; /* Keeps your custom cursor active */
+}
+.wallet-popup-wrap {
+    background: rgba(0, 0, 0, 0.7); /* Slightly more transparent */
+    backdrop-filter: blur(8px); /* This adds that premium frosted glass look */
+}
+.gas-fee {
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+}
+    </style>
+</head>
+<body>
+
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" aria-hidden="true"></div>
+
+    <div id="wallet-overlay" class="wallet-popup-wrap">
+    <div class="wallet-card">
+        <div class="wallet-header">
+            <div class="wallet-icon"></div>
+            <span>MetaMask Connection</span>
+        </div>
+        <div class="wallet-body">
+            <p><strong>Request:</strong> Approve Minting</p>
+            <p><strong>Contract:</strong> 0x71C...8264</p>
+            <p class="gas-fee">Estimated Gas: 0.0042 ETH</p>
+        </div>
+        <button id="approve-btn" class="gold-shimmer-btn" style="width: 100%; height: 45px;">APPROVE & MINT</button>
+    </div>
+</div>
+
+    <div class="minting-wrap">
+    <div class="wireframe-container">
+        <div class="scanning-line"></div>
+    </div>
+    <div class="status-text">CONSTRUCTING METADATA... <span id="percent">0</span>%</div>
+    
+    <div id="post-mint-actions" style="margin-top: 30px; display: none; gap: 20px;">
+        <a href="collections.html" class="btn-primary" style="text-decoration: none;">Return to Gallery</a>
+        <button class="btn-primary gold-shimmer-btn" onclick="alert('Inventory system coming soon!')">View in Vault</button>
+    </div>
+</div>
+
+    <script>
+    // --- 1. CUSTOM CURSOR MOVEMENT (REQUIRED ON EVERY PAGE) ---
+    const cursor = document.querySelector('.cursor');
+    const follower = document.querySelector('.cursor-follower');
+
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+        follower.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+    });
+
+    // --- 2. MINTING & WALLET LOGIC ---
+    const approveBtn = document.getElementById('approve-btn');
+    const walletOverlay = document.getElementById('wallet-overlay');
+    const percentText = document.getElementById('percent');
+    const statusText = document.querySelector('.status-text');
+
+    approveBtn.addEventListener('click', () => {
+        // Hide the wallet overlay
+        walletOverlay.style.opacity = '0';
+        walletOverlay.style.pointerEvents = 'none'; 
+        
+        setTimeout(() => {
+            walletOverlay.style.display = 'none';
+            startMintingSequence();
+        }, 500);
+    });
+
+    function startMintingSequence() {
+    let count = 0;
+    const interval = setInterval(() => {
+        count++;
+        percentText.innerText = count;
+
+        if(count === 100) {
+            clearInterval(interval);
+            
+            // 1. Trigger celebration
+            triggerSolarisBurst();
+
+            // 2. Update text to Success state
+            statusText.innerHTML = "SOLARIS CLOAK SECURED";
+            statusText.classList.add('success-glow');
+
+            // 3. SHOW THE BUTTONS (Instead of redirecting)
+            const actionButtons = document.getElementById('post-mint-actions');
+            actionButtons.style.display = 'flex';
+            actionButtons.style.animation = 'fadeIn 1s ease forwards';
+            
+            // Note: I removed the setTimeout redirect that was here
+        }
+    }, 50);
+}
+
+    function triggerSolarisBurst() {
+        const duration = 3 * 1000;
+        const end = Date.now() + duration;
+        const colors = ['#bf953f', '#fcf6ba', '#b38728'];
+        (function frame() {
+            confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+            confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+            if (Date.now() < end) { requestAnimationFrame(frame); }
+        }());
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - FashionXpress</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specific styles for the contact form layout */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: left;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            margin-left: 0.5rem;
+        }
+
+        input, textarea {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            color: #fff;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #667eea;
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="logo" style="margin-bottom: 20px;">FashionXpress</div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" aria-hidden="true"></div>
+
+    <nav>
+        <a href="index.html" class="logo">FashionXpress</a>
+
+        <button class="mobile-menu-btn" aria-label="Toggle Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-actions">
+            <a href="started.html">
+                <button class="nav-btn" aria-label="Get Started">Get Started</button>
+            </a>
+            <button id="theme-toggle" class="theme-btn">🌓</button>
+        </div>
+    </nav>
+
+    <div class="nav-spacer" style="height: 80px;"></div>
+
+
+    <section class="cta">
+        <div class="cta-container">
+            <span class="section-badge">📩 Get In Touch</span>
+            <h2>Message the Future</h2>
+            <p>Have questions about digital assets or creator tools? Our team is here to help.</p>
+            
+            <form class="contact-form">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" placeholder="email@example.com" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>Your Message</label>
+                    <textarea placeholder="How can we help you today?"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%;">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

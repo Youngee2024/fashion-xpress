@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Collections - FashionXpress</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="logo" style="margin-bottom: 20px">FashionXpress</div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" aria-hidden="true"></div>
+
+    <nav>
+        <a href="index.html" class="logo">FashionXpress</a>
+
+        <button class="mobile-menu-btn" aria-label="Toggle Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-actions">
+            <a href="started.html">
+                <button class="nav-btn" aria-label="Get Started">Get Started</button>
+            </a>
+            <button id="theme-toggle" class="theme-btn">🌓</button>
+        </div>
+    </nav>
+    
+    <div class="nav-spacer" style="height: 80px;"></div>
+
+    <section class="features">
+    <div class="section-header">
+        <span class="section-badge">💎 Virtual Atelier</span>
+        <h2>Digital Collections</h2>
+        <p>Explore limited edition digital assets verified on the blockchain.</p>
+    </div>
+
+    <div class="filter-wrapper">
+        <div class="search-container">
+            <input type="text" id="collection-search" placeholder="Search collections...">
+            <span class="search-icon">🔍</span>
+        </div>
+        <div class="filter-group">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="limited">Limited</button>
+            <button class="filter-btn" data-filter="rare">Rare</button>
+            <button class="filter-btn" data-filter="ultra-rare">Ultra Rare</button>
+        </div>
+    </div>
+
+    <div class="features-grid" id="collections-grid">
+        <div class="feature-card" data-category="limited">
+            <div class="collection-img" style="background-image: url('./images/collection1.jpg');"></div>
+            <h3>Neo-Safari 2026</h3>
+            <p>Limited Edition • 50 Pieces</p>
+            <a href="neo-safari.html" class="btn-primary magnetic-btn" style="margin-top: 1rem; width: 100%; max-width: none;">View Details</a>
+        </div>
+        
+        <div class="feature-card" data-category="rare">
+            <div class="collection-img" style="background-image: url('./images/collection2.jpg');"></div>
+            <h3>Quantum Lace</h3>
+            <p>Rare • 12 Pieces</p>
+            <a href="quantum-lace.html" class="btn-primary magnetic-btn" style="margin-top: 1rem; width: 100%; max-width: none;">View Details</a>
+        </div>
+
+        <div class="feature-card" data-category="ultra-rare">
+            <div class="collection-img" style="background-image: url('./images/collection3.jpg');"></div>
+            <h3>Solaris Cloak</h3>
+            <p>Ultra Rare • 5 Pieces</p>
+            <a href="solaris-cloak.html" class="btn-primary magnetic-btn" style="margin-top: 1rem; width: 100%; max-width: none;">View Details</a>
+        </div>
+
+        <div class="feature-card" data-category="ultra-rare">
+            <div class="collection-img" style="background-image: url('./images/collection4.jpg');"></div>
+            <h3>Quantum Silk</h3>
+            <p>Ultra Rare • 2 Pieces</p>
+            <a href="Quantum-silk.html" class="btn-primary magnetic-btn" style="margin-top: 1rem; width: 100%; max-width: none;">View Details</a>
+        </div>
+
+        <div class="feature-card" data-category="limited">
+            <div class="collection-img" style="background-image: url('./images/collection5.jpg');"></div>
+            <h3>Net-Xplora 1986</h3>
+            <p>Limited Edition • 75 Pieces</p>
+            <a href="net-xplora.html" class="btn-primary magnetic-btn" style="margin-top: 1rem; width: 100%; max-width: none;">View Details</a>
+        </div>
+
+        <div class="feature-card" data-category="rare">
+            <div class="collection-img" style="background-image: url('./images/collection6.jpg');"></div>
+            <h3>Lavida Locale</h3>
+            <p>Rare • 8 Pieces</p>
+            <a href="lavida-locale.html" class="btn-primary magnetic-btn" style="margin-top: 1rem; width: 100%; max-width: none;">View Details</a>
+        </div>
+        
+    </div>
+</section>
+
+<section class="newsletter">
+        <div class="newsletter-card">
+            <div class="newsletter-content">
+                <span class="section-badge">Stay Updated</span>
+                <h2>Join the Virtual Elite</h2>
+                <p>Be the first to know about limited edition drops and AI fashion insights.</p>
+            </div>
+            <form class="newsletter-form" id="newsletter-form">
+                <div class="input-group">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit" class="btn-primary" style="width: 100%; max-width: none;">Subscribe</button>
+                </div>
+                <p class="form-note">By subscribing, you agree to our Digital Privacy Policy.</p>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Product</h4>
+                <a href="#">Features</a>
+                <a href="#">Pricing</a>
+                <a href="#">Security</a>
+                <a href="#">Roadmap</a>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <a href="about.html">About</a>
+                <a href="#">Careers</a>
+                <a href="#">Press</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <a href="#">Documentation</a>
+                <a href="#">API</a>
+                <a href="#">Community</a>
+                <a href="#">Support</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Security</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 FashionXpress. Built for Africa's fashion future.</p>
+        </div>
+    </footer>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>

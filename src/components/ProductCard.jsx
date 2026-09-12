@@ -1,0 +1,3 @@
+import { Link } from 'react-router-dom'
+import { Icon } from './Icons'
+export function ProductCard({ product, onAdd }) { return <article className="product-card"><Link className="product-image" to={`/collections/${product.id}`}><img src={product.image} alt={product.name}/><span className="rarity">{product.rarity}</span></Link><div className="product-copy"><div><Link to={`/collections/${product.id}`}><h3>{product.name}</h3></Link><p>{product.stock} editions</p></div><div className="product-price"><strong>{product.price.toFixed(1)} ETH</strong><button onClick={() => onAdd(product)} aria-label={`Add ${product.name} to bag`}><Icon name="plus" size={18}/></button></div></div></article> }

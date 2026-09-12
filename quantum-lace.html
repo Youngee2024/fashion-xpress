@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details - FashionXpress</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="logo" style="margin-bottom: 20px">FashionXpress</div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" aria-hidden="true"></div>
+    
+    <nav>
+        <a href="index.html" class="logo">FashionXpress</a>
+
+        <button class="mobile-menu-btn" aria-label="Toggle Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-actions">
+            <a href="collections.html" class="back-link">← Back to Gallery</a>
+            <a href="started.html">
+                <button class="nav-btn" aria-label="Get Started">Get Started</button>
+            </a>
+            <button id="theme-toggle" class="theme-btn">🌓</button>
+        </div>
+    </nav>
+
+    <div class="nav-spacer" style="height: 80px;"></div>
+
+
+    <section class="details-container">
+        <div class="details-grid">
+            <div class="item-preview-card">
+                <img src="./images/collection2.jpg" alt="Collection Item">
+            </div>
+            <div class="item-info">
+                <span class="section-badge">Limited Edition</span>
+                <h1>Quantum Lace</h1>
+                <p class="price">1.8 ETH</p>
+                <p class="description">Interwoven algorithmic patterns that shimmer in virtual light. Designed for the high-end metaverse.</p>
+                <div class="rarity-container">
+                    <div class="rarity-header">
+                        <span>Rarity Level</span>
+                        <span id="rarity-text">Rare</span>
+                    </div>
+                    <div class="rarity-bar">
+                        <div class="rarity-fill" id="rarity-fill" style="width: 40%;"></div>
+                    </div>
+                </div>
+                <button class="btn-primary" style="width: 100%; max-width: none; display: block;">Mint Now</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

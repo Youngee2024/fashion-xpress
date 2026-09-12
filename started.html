@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join the Atelier - FashionXpress</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<div class="cursor" aria-hidden="true"></div>
+<div class="cursor-follower" aria-hidden="true"></div>
+<body>
+    <nav>
+        <a href="index.html" class="logo">FashionXpress</a>
+        <div class="nav-actions">
+            <button id="theme-toggle" class="theme-btn">🌓</button>
+        </div>
+    </nav>
+
+    <section class="contact-hero">
+        <div class="section-header">
+            <span class="section-badge">Designers Wanted</span>
+            <h2>Join the Digital Revolution</h2>
+            <p>Apply to showcase your digital couture in our exclusive Virtual Atelier.</p>
+        </div>
+
+        <div class="contact-container">
+            <form class="application-form" id="designer-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" placeholder="e.g. Elena Vance" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" placeholder="elena@studio.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Portfolio Link (Behance, ArtStation, or Website)</label>
+                    <input type="url" placeholder="https://..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Designer Specialty</label>
+                    <select required>
+                        <option value="" disabled selected>Select your niche</option>
+                        <option value="streetwear">3D Streetwear</option>
+                        <option value="couture">Virtual Couture</option>
+                        <option value="accessories">Digital Accessories</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tell us about your vision</label>
+                    <textarea rows="5" placeholder="Describe your design philosophy..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%;">Submit Application</button>
+            </form>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-card">
+            <div class="modal-icon">✓</div>
+            <h2>Application Received!</h2>
+            <p>Thank you for joining FashionXpress. Our curators will review your portfolio and contact you within 48 hours.</p>
+            <button class="btn-primary" id="close-modal">Back to Site</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Fitting Room | FashionXpress</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* AR Try-On Specific Styles */
+        .ar-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+        }
+
+        .ar-hero {
+            padding: 120px 5% 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ar-hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        .ar-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ar-hero p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .ar-badge {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            color: #667eea;
+        }
+
+        .ar-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            padding: 0 5% 8rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .ar-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .ar-viewer {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ar-placeholder {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .ar-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .ar-placeholder h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .ar-placeholder p {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            max-width: 400px;
+        }
+
+        .ar-activate-btn {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+
+        .ar-activate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+        }
+
+        .ar-controls {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            height: fit-content;
+        }
+
+        .ar-controls h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .outfit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .outfit-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .outfit-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .outfit-card.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .outfit-card img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+        }
+
+        .outfit-card p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0;
+        }
+
+        .outfit-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #667eea;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        .ar-features {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .ar-features h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .features-list li::before {
+            content: '✓';
+            color: #4cd137;
+            font-weight: bold;
+        }
+
+        .ar-instructions {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .ar-instructions h4 {
+            color: #667eea;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .ar-instructions ol {
+            padding-left: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .ar-instructions li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Webcam View Styles */
+        .webcam-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            display: none;
+        }
+
+        #webcam-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Mirror effect */
+        }
+
+        .webcam-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .ar-tools {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .ar-tool-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ar-tool-btn:hover {
+            background: rgba(102, 126, 234, 0.7);
+            border-color: #667eea;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        /* Error States */
+        .ar-error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #ff6b6b;
+            display: none;
+        }
+
+        /* Success States */
+        .ar-success {
+            background: rgba(76, 209, 55, 0.1);
+            border: 1px solid rgba(76, 209, 55, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #4cd137;
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .ar-container {
+                padding: 0 2rem 4rem;
+            }
+
+            .ar-viewer {
+                height: 400px;
+                padding: 1rem;
+            }
+
+            .outfit-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+
+            .ar-controls {
+                padding: 1.5rem;
+            }
+
+            .ar-tools {
+                bottom: 10px;
+            }
+
+            .ar-tool-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="ar-page">
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="logo" style="margin-bottom: 20px;">FashionXpress</div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" aria-hidden="true"></div>
+
+    <nav>
+        <a href="index.html" class="logo">FashionXpress</a>
+
+        <button class="mobile-menu-btn" aria-label="Toggle Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-actions">
+            <a href="collections.html">
+                <button class="nav-btn" aria-label="View Collections">Collections</button>
+            </a>
+            <a href="index.html">
+                <button class="nav-btn" aria-label="Back to Home">Home</button>
+            </a>
+            <button id="theme-toggle" class="theme-btn">🌓</button>
+        </div>
+    </nav>
+
+    <div class="nav-spacer" style="height: 80px;"></div>
+
+    <section class="ar-hero">
+        <span class="ar-badge">🚀 EXPERIMENTAL FEATURE</span>
+        <h1>Virtual Fitting Room</h1>
+        <p>Try digital fashion in your space using augmented reality. See how pieces look on you before you collect.</p>
+    </section>
+
+    <div class="ar-container">
+        <!-- AR Viewer Section -->
+        <div class="ar-viewer">
+            <div class="ar-placeholder" id="ar-placeholder">
+                <div class="ar-icon">👁️</div>
+                <h3>Ready to Try On?</h3>
+                <p>Activate your camera to see digital fashion pieces in your environment. Choose an outfit below to get started.</p>
+                <button class="ar-activate-btn" id="activate-ar">
+                    <span>👁️</span> Activate AR
+                </button>
+                <div class="ar-instructions">
+                    <h4>How it works:</h4>
+                    <ol>
+                        <li>Grant camera access when prompted</li>
+                        <li>Select an outfit from the gallery</li>
+                        <li>Move around to see different angles</li>
+                        <li>Capture photos to share</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="webcam-container" id="webcam-container">
+                <video id="webcam-video" autoplay playsinline></video>
+                <div class="webcam-overlay" id="webcam-overlay"></div>
+                <div class="ar-tools">
+                    <button class="ar-tool-btn" id="capture-btn" title="Capture Photo">📸</button>
+                    <button class="ar-tool-btn" id="toggle-outfit" title="Toggle Outfit">👗</button>
+                    <button class="ar-tool-btn" id="stop-ar" title="Stop AR">⏹️</button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Initializing AR experience...</p>
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="ar-controls">
+            <h3>Available Outfits</h3>
+            <div class="outfit-grid" id="outfit-grid">
+                <!-- Outfits will be populated by JavaScript -->
+            </div>
+
+            <div class="ar-features">
+                <h4>AR Features</h4>
+                <ul class="features-list">
+                    <li>Real-time virtual try-on</li>
+                    <li>Material visualization</li>
+                    <li>Lighting adaptation</li>
+                    <li>Pose detection</li>
+                    <li>Photo capture & share</li>
+                    <li>Mobile & desktop compatible</li>
+                </ul>
+            </div>
+
+            <div class="ar-success" id="success-message">
+                ✅ Outfit loaded successfully! Move around to see different angles.
+            </div>
+
+            <div class="ar-error" id="error-message">
+                ❌ Webcam access required for AR experience. Please allow camera access.
+            </div>
+
+            <div class="ar-instructions">
+                <h4>Tips for best experience:</h4>
+                <ol>
+                    <li>Use in well-lit environment</li>
+                    <li>Stand about 2 meters from camera</li>
+                    <li>Move slowly for better tracking</li>
+                    <li>Allow camera permissions</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- Photo Gallery Modal -->
+    <div class="modal-overlay" id="gallery-modal">
+        <div class="modal-card" style="max-width: 600px;">
+            <h2>Captured Photos</h2>
+            <div class="photo-gallery" id="photo-gallery">
+                <!-- Photos will be added here -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="close-gallery">Close</button>
+                <button class="btn-primary" id="share-gallery">Share All</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>AR Try-On</h4>
+                <a href="#" onclick="showInstructions()">How to Use</a>
+                <a href="#" onclick="showCompatibility()">Device Compatibility</a>
+                <a href="#" onclick="showTroubleshooting()">Troubleshooting</a>
+                <a href="contact.html">Feedback</a>
+            </div>
+            <div class="footer-section">
+                <h4>Technology</h4>
+                <a href="#">WebXR</a>
+                <a href="#">TensorFlow.js</a>
+                <a href="#">Three.js</a>
+                <a href="#">MediaPipe</a>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <a href="collections.html">Collections</a>
+                <a href="marketplace.html">Designers</a>
+                <a href="academy.html">Tutorials</a>
+                <a href="community.html">Community</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Camera Usage</a>
+                <a href="#">Data Processing</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 FashionXpress AR Experience. Experimental feature - may not work on all devices.</p>
+        </div>
+    </footer>
+
+    <script src="script.js" defer></script>
+    <script>
+        // AR Try-On JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const activateBtn = document.getElementById('activate-ar');
+            const stopBtn = document.getElementById('stop-ar');
+            const captureBtn = document.getElementById('capture-btn');
+            const toggleOutfitBtn = document.getElementById('toggle-outfit');
+            const webcamContainer = document.getElementById('webcam-container');
+            const arPlaceholder = document.getElementById('ar-placeholder');
+            const loading = document.getElementById('loading');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            const outfitGrid = document.getElementById('outfit-grid');
+            const galleryModal = document.getElementById('gallery-modal');
+            const closeGalleryBtn = document.getElementById('close-gallery');
+            const shareGalleryBtn = document.getElementById('share-gallery');
+            const photoGallery = document.getElementById('photo-gallery');
+            
+            let webcamStream = null;
+            let currentOutfit = null;
+            let capturedPhotos = [];
+            let isARActive = false;
+
+            // Outfit Data
+            const outfits = [
+                {
+                    id: 'solaris-cloak',
+                    name: 'Solaris Cloak',
+                    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop',
+                    badge: '🔥 Hot',
+                    description: 'Reactive fabric that glows'
+                },
+                {
+                    id: 'neon-dress',
+                    name: 'Neon Glow Dress',
+                    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop',
+                    badge: '✨ New',
+                    description: 'Color-changing material'
+                },
+                {
+                    id: 'quantum-suit',
+                    name: 'Quantum Suit',
+                    image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w-400&h=500&fit=crop',
+                    badge: '⚡ AR Ready',
+                    description: 'Holographic display'
+                },
+                {
+                    id: 'cyber-jacket',
+                    name: 'Cyber Jacket',
+                    image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&h=500&fit=crop',
+                    badge: '🔮 Limited',
+                    description: 'LED embedded'
+                },
+                {
+                    id: 'hologram-top',
+                    name: 'Hologram Top',
+                    image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=500&fit=crop',
+                    badge: '🌟 Popular',
+                    description: 'Transparent layers'
+                },
+                {
+                    id: 'digital-coat',
+                    name: 'Digital Trench Coat',
+                    image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&h=500&fit=crop',
+                    badge: '🎨 Custom',
+                    description: 'Pattern morphing'
+                }
+            ];
+
+            // Initialize outfit grid
+            function initOutfitGrid() {
+                outfitGrid.innerHTML = '';
+                outfits.forEach(outfit => {
+                    const outfitCard = document.createElement('div');
+                    outfitCard.className = 'outfit-card';
+                    outfitCard.dataset.id = outfit.id;
+                    
+                    outfitCard.innerHTML = `
+                        <img src="${outfit.image}" alt="${outfit.name}" loading="lazy">
+                        ${outfit.badge ? `<span class="outfit-badge">${outfit.badge}</span>` : ''}
+                        <p>${outfit.name}</p>
+                    `;
+                    
+                    outfitCard.addEventListener('click', () => selectOutfit(outfit.id));
+                    outfitGrid.appendChild(outfitCard);
+                });
+            }
+
+            // Select outfit
+            function selectOutfit(outfitId) {
+                // Remove active class from all cards
+                document.querySelectorAll('.outfit-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                
+                // Add active class to selected card
+                const selectedCard = document.querySelector(`.outfit-card[data-id="${outfitId}"]`);
+                if (selectedCard) {
+                    selectedCard.classList.add('active');
+                }
+                
+                currentOutfit = outfitId;
+                showSuccess('Outfit selected: ' + outfits.find(o => o.id === outfitId).name);
+                
+                // If AR is active, update the overlay
+                if (isARActive && webcamStream) {
+                    updateAROverlay();
+                }
+            }
+
+            // Activate AR
+            activateBtn.addEventListener('click', async function() {
+                try {
+                    loading.style.display = 'block';
+                    arPlaceholder.style.display = 'none';
+                    
+                    // Request camera access
+                    webcamStream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: 'user',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        },
+                        audio: false
+                    });
+                    
+                    const video = document.getElementById('webcam-video');
+                    video.srcObject = webcamStream;
+                    
+                    // Wait for video to load
+                    video.onloadedmetadata = () => {
+                        loading.style.display = 'none';
+                        webcamContainer.style.display = 'block';
+                        isARActive = true;
+                        
+                        // Select first outfit by default
+                        if (!currentOutfit) {
+                            selectOutfit(outfits[0].id);
+                        }
+                        
+                        showSuccess('AR experience activated!');
+                    };
+                    
+                    video.play();
+                    
+                } catch (error) {
+                    console.error('Error accessing webcam:', error);
+                    loading.style.display = 'none';
+                    arPlaceholder.style.display = 'block';
+                    showError('Could not access camera. Please check permissions.');
+                }
+            });
+
+            // Stop AR
+            stopBtn.addEventListener('click', function() {
+                if (webcamStream) {
+                    webcamStream.getTracks().forEach(track => track.stop());
+                    webcamStream = null;
+                }
+                
+                webcamContainer.style.display = 'none';
+                arPlaceholder.style.display = 'block';
+                isARActive = false;
+                hideMessages();
+            });
+
+            // Capture photo
+            captureBtn.addEventListener('click', function() {
+                if (!isARActive) return;
+                
+                const video = document.getElementById('webcam-video');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Add outfit name as text
+                if (currentOutfit) {
+                    const outfit = outfits.find(o => o.id === currentOutfit);
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                    ctx.fillRect(20, canvas.height - 60, 300, 40);
+                    
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillText(`👗 ${outfit.name}`, 40, canvas.height - 35);
+                    ctx.font = '14px Arial';
+                    ctx.fillText('FashionXpress AR Try-On', 40, canvas.height - 15);
+                }
+                
+                // Convert to data URL
+                const photoData = canvas.toDataURL('image/jpeg', 0.9);
+                capturedPhotos.push({
+                    data: photoData,
+                    outfit: currentOutfit,
+                    timestamp: new Date().toLocaleString()
+                });
+                
+                // Update gallery
+                updatePhotoGallery();
+                
+                // Show success animation
+                const originalText = captureBtn.innerHTML;
+                captureBtn.innerHTML = '✅ Captured!';
+                setTimeout(() => {
+                    captureBtn.innerHTML = originalText;
+                }, 1000);
+                
+                // Show notification
+                showSuccess('Photo captured! View in gallery.');
+            });
+
+            // Update AR overlay (simplified - in real app would use WebGL/Three.js)
+            function updateAROverlay() {
+                const overlay = document.getElementById('webcam-overlay');
+                if (!currentOutfit) return;
+                
+                const outfit = outfits.find(o => o.id === currentOutfit);
+                overlay.innerHTML = `
+                    <div style="position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 10px; font-family: Arial;">
+                        <strong>${outfit.name}</strong><br>
+                        <small>${outfit.description}</small>
+                    </div>
+                `;
+            }
+
+            // Toggle outfit visibility
+            toggleOutfitBtn.addEventListener('click', function() {
+                const overlay = document.getElementById('webcam-overlay');
+                overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
+                
+                const icon = overlay.style.display === 'none' ? '👗' : '👁️';
+                toggleOutfitBtn.innerHTML = icon;
+            });
+
+            // Update photo gallery
+            function updatePhotoGallery() {
+                photoGallery.innerHTML = '';
+                
+                if (capturedPhotos.length === 0) {
+                    photoGallery.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5);">No photos captured yet.</p>';
+                    return;
+                }
+                
+                capturedPhotos.forEach((photo, index) => {
+                    const photoItem = document.createElement('div');
+                    photoItem.className = 'photo-item';
+                    photoItem.style.marginBottom = '1rem';
+                    
+                    const outfit = outfits.find(o => o.id === photo.outfit);
+                    photoItem.innerHTML = `
+                        <div style="display: flex; gap: 1rem; align-items: center; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px;">
+                            <img src="${photo.data}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;" alt="Captured photo">
+                            <div>
+                                <strong style="color: white;">${outfit ? outfit.name : 'Unknown Outfit'}</strong>
+                                <p style="margin: 0.5rem 0; color: rgba(255,255,255,0.7); font-size: 0.9rem;">${photo.timestamp}</p>
+                                <button onclick="downloadPhoto(${index})" style="background: #667eea; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">Download</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    photoGallery.appendChild(photoItem);
+                });
+            }
+
+            // Gallery modal controls
+            captureBtn.addEventListener('click', function() {
+                galleryModal.classList.add('active');
+            });
+
+            closeGalleryBtn.addEventListener('click', function() {
+                galleryModal.classList.remove('active');
+            });
+
+            shareGalleryBtn.addEventListener('click', async function() {
+                if (capturedPhotos.length === 0) {
+                    alert('No photos to share!');
+                    return;
+                }
+                
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: 'My FashionXpress AR Try-On',
+                            text: 'Check out my digital fashion try-ons!',
+                            url: window.location.href
+                        });
+                    } catch (error) {
+                        console.log('Sharing cancelled:', error);
+                    }
+                } else {
+                    // Fallback: download all photos as zip
+                    alert('Sharing not supported on this device. Photos are saved in your gallery.');
+                }
+            });
+
+            // Utility functions
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+
+            function hideMessages() {
+                successMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+            }
+
+            // Global function for downloading photos
+            window.downloadPhoto = function(index) {
+                const photo = capturedPhotos[index];
+                if (!photo) return;
+                
+                const link = document.createElement('a');
+                link.href = photo.data;
+                link.download = `fashionxpress-ar-${index + 1}.jpg`;
+                link.click();
+            };
+
+            // Footer link functions
+            window.showInstructions = function() {
+                alert('AR Try-On Instructions:\n\n1. Click "Activate AR" to start camera\n2. Select an outfit from the gallery\n3. Move around to see different angles\n4. Click camera icon to capture photos\n5. View and share your photos in gallery');
+            };
+
+            window.showCompatibility = function() {
+                alert('Compatible Devices:\n\n✅ Modern Chrome, Edge, Safari\n✅ Android 9+ with Chrome\n✅ iOS 13+ with Safari\n✅ Desktop with webcam\n❌ Internet Explorer\n❌ Older mobile browsers');
+            };
+
+            window.showTroubleshooting = function() {
+                alert('Troubleshooting:\n\n1. Ensure camera permissions are granted\n2. Use in well-lit environment\n3. Restart browser if issues persist\n4. Try different browser\n5. Check internet connection');
+            };
+
+            // Initialize
+            initOutfitGrid();
+            
+            // Clean up on page leave
+            window.addEventListener('beforeunload', function() {
+                if (webcamStream) {
+                    webcamStream.getTracks().forEach(track => track.stop());
+                }
+            });
+        });
+    </script>
+</body>
+</html>
