@@ -51,7 +51,7 @@ export function ARTryOn() {
     <section className="ar-heading page-shell"><span className="eyebrow">Experimental atelier</span><h1>Your room.<br/><em>Your runway.</em></h1><p>Select a piece, activate your camera, and explore the collection in your own space.</p></section>
     <section className="page-shell ar-layout">
       <div className={`camera-stage ${active ? 'is-live' : ''}`}>
-        {active ? <video ref={videoRef} autoPlay playsInline muted/> : <SafeImage className="camera-poster" src="/images/ar.jpg" alt="AR fitting room preview"/>}
+        {active ? <video ref={videoRef} autoPlay playsInline muted/> : <SafeImage className="camera-poster" src="/images/camera.jpg" alt="AR fitting room preview"/>}
         <div className="camera-shade"/>
         <div className="camera-chrome"><span className={active ? 'live' : ''}><i/>{active ? 'Live view' : 'Camera ready'}</span><span>Front camera · Mirrored</span></div>
         <div className="frame-guide" aria-hidden="true"><i/><i/><i/><i/></div>
