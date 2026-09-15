@@ -13,6 +13,11 @@ const ROUTE_META = {
   '/about': { title: 'About FashionXpress', description: 'Discover how FashionXpress connects African creativity, digital craft, and global culture.' },
   '/contact': { title: 'Contact | FashionXpress', description: 'Find direct contact details for FashionXpress partnerships, collecting, press, and creator support.' },
   '/get-started': { title: 'Creator Atelier | FashionXpress', description: 'Learn how independent digital fashion creators can work with FashionXpress.' },
+  '/privacy': { title: 'Privacy | FashionXpress', description: 'Understand what the FashionXpress portfolio prototype stores locally and what information it never transmits.' },
+  '/terms': { title: 'Prototype Terms | FashionXpress', description: 'Read the demonstration terms for exploring the non-commercial FashionXpress portfolio prototype.' },
+  '/licensing': { title: 'Digital Fashion Licensing | FashionXpress', description: 'Explore how a future FashionXpress service would explain creator rights and digital garment licenses.' },
+  '/refund-policy': { title: 'Purchase Status | FashionXpress', description: 'Learn why purchases and refunds are unavailable in the non-transactional FashionXpress prototype.' },
+  '/accessibility': { title: 'Accessibility | FashionXpress', description: 'Review current accessibility support and known testing limits for the FashionXpress portfolio prototype.' },
 }
 
 export function getRouteMeta(pathname) {
