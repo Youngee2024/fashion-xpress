@@ -1,3 +1,5 @@
+import { APP_MODE } from './appMode.js'
+
 export async function workflowAvailability(signal) {
   try {
     const response = await fetch('/api/workflow-status', { signal, headers: { accept: 'application/json' } })
@@ -29,4 +31,12 @@ export async function submitWorkflow(endpoint, payload, signal) {
     return { ok: false, code: 'server_error', message: 'The server returned an unreadable response. Please try again.', recoverable: true }
   }
   return { ...data, ok: response.ok && data.ok === true, status: response.status, recoverable: response.status >= 429 || response.status >= 500 }
+}
+
+export async function runWorkflow({ endpoint, payload, demoMessage, mode = APP_MODE, delayMs = 320, liveSubmit = submitWorkflow }) {
+  if (mode !== 'live') {
+    if (delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs))
+    return { ok: true, demo: true, message: demoMessage }
+  }
+  return liveSubmit(endpoint, payload)
 }

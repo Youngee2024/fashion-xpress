@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { hasErrors, validateNewsletter } from '../data/formValidation'
-import { submitWorkflow } from '../data/workflowApi'
+import { IS_DEMO_MODE } from '../data/appMode'
+import { runWorkflow } from '../data/workflowApi'
 import { useWorkflowAvailability } from '../hooks/useWorkflowAvailability'
 import { Icon } from './Icons'
 import { FieldError } from './PrototypeUI'
-import { ConsentField, Honeypot, ServiceStatus } from './WorkflowUI'
+import { ConsentField, Honeypot, PortfolioDemoIndicator, ServiceStatus } from './WorkflowUI'
 
 const links = [['/', 'Home'], ['/collections', 'Collections'], ['/ar-tryon', 'AR concept'], ['/community', 'Community'], ['/about', 'About']]
 
@@ -40,6 +41,7 @@ export function SectionHeading({ eyebrow, title, copy, align = 'left' }) {
 }
 
 export function Newsletter() {
+  const demoMessage = 'Demo complete—your email was not subscribed.'
   const [email, setEmail] = useState('')
   const [consent, setConsent] = useState(false)
   const [website, setWebsite] = useState('')
@@ -58,13 +60,15 @@ export function Newsletter() {
     if (hasErrors(nextErrors)) return
     submitting.current = true
     setStage('submitting')
-    const response = await submitWorkflow('/api/newsletter/subscribe', { email, consent, website, startedAt: startedAt.current })
+    const response = await runWorkflow({ endpoint: '/api/newsletter/subscribe', payload: { email, consent, website, startedAt: startedAt.current }, demoMessage })
     submitting.current = false
     setMessage(response.message)
     if (response.ok) {
-      setEmail('')
-      setConsent(false)
-      setWebsite('')
+      if (!response.demo) {
+        setEmail('')
+        setConsent(false)
+        setWebsite('')
+      }
       setStage('complete')
     } else {
       if (response.fields) setErrors(response.fields)
@@ -73,11 +77,14 @@ export function Newsletter() {
   }
 
   function reset() {
+    setEmail('')
+    setConsent(false)
+    setWebsite('')
     startedAt.current = Date.now()
     setStage('editing')
     setMessage('')
     setErrors({})
   }
 
-  return <section className="newsletter panel"><div><span className="eyebrow">The front row</span><h2>Stay ahead of the drop.</h2><p>Opt in to occasional collection and creator updates. Confirmation is required.</p></div>{stage === 'complete' ? <div className="newsletter-result" role="status" aria-live="polite"><Icon name="check"/><h3>Check your inbox.</h3><p>{message}</p><button className="text-link" type="button" onClick={reset}>Use another address</button></div> : <form noValidate onSubmit={submit} aria-busy={stage === 'submitting'}><ServiceStatus status={availability} noun="newsletter signup"/>{stage === 'error' && <p className="form-message error" role="alert">{message}</p>}<fieldset disabled={availability !== 'available' || stage === 'submitting'}><label htmlFor="newsletter-email">Email address</label><input id="newsletter-email" name="email" maxLength="254" aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'newsletter-error newsletter-note' : 'newsletter-note'} type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(event) => { setEmail(event.target.value); if (errors.email) setErrors((current) => ({ ...current, email: '' })) }}/><FieldError id="newsletter-error">{errors.email}</FieldError><ConsentField id="newsletter-consent" checked={consent} onChange={(event) => { setConsent(event.target.checked); if (errors.consent) setErrors((current) => ({ ...current, consent: '' })) }} error={errors.consent}>I want to receive FashionXpress email updates.</ConsentField><Honeypot prefix="newsletter" value={website} onChange={(event) => setWebsite(event.target.value)}/><button className="button" type="submit" disabled={availability !== 'available' || stage === 'submitting'}>{stage === 'submitting' ? 'Requesting confirmation…' : <>Join the front row <Icon name="arrow" size={16}/></>}</button><small id="newsletter-note" className="prototype-note">Supabase stores consent status; Resend sends confirmation and manages the mailing contact.</small></fieldset></form>}</section>
+  return <section className="newsletter panel"><div><span className="eyebrow">The front row</span><h2>Stay ahead of the drop.</h2><p>{IS_DEMO_MODE ? 'Try the signup flow. No email will be subscribed in this portfolio demo.' : 'Opt in to occasional collection and creator updates. Confirmation is required.'}</p></div>{stage === 'complete' ? <div className="newsletter-result" role="status" aria-live="polite"><Icon name="check"/><h3>{IS_DEMO_MODE ? demoMessage : 'Check your inbox.'}</h3><p>{IS_DEMO_MODE ? 'No request was sent and your email was not saved. Select Done to clear your entry.' : message}</p><button className="text-link" type="button" onClick={reset}>{IS_DEMO_MODE ? 'Done — clear entry' : 'Use another address'}</button></div> : <form noValidate onSubmit={submit} aria-busy={stage === 'submitting'}><ServiceStatus status={availability} noun="newsletter signup"/>{stage === 'error' && <p className="form-message error" role="alert">{message}</p>}<fieldset disabled={availability !== 'available' || stage === 'submitting'}><label htmlFor="newsletter-email">Email address</label><input id="newsletter-email" name="email" maxLength="254" aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'newsletter-error newsletter-note' : 'newsletter-note'} type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(event) => { setEmail(event.target.value); if (errors.email) setErrors((current) => ({ ...current, email: '' })) }}/><FieldError id="newsletter-error">{errors.email}</FieldError><ConsentField id="newsletter-consent" checked={consent} onChange={(event) => { setConsent(event.target.checked); if (errors.consent) setErrors((current) => ({ ...current, consent: '' })) }} error={errors.consent}>I want to receive FashionXpress email updates.</ConsentField><Honeypot prefix="newsletter" value={website} onChange={(event) => setWebsite(event.target.value)}/><div className="workflow-action"><button className="button" type="submit" disabled={availability !== 'available' || stage === 'submitting'}>{stage === 'submitting' ? (IS_DEMO_MODE ? 'Completing demo…' : 'Requesting confirmation…') : <>Join the front row <Icon name="arrow" size={16}/></>}</button>{IS_DEMO_MODE && <PortfolioDemoIndicator/>}</div><small id="newsletter-note" className="prototype-note">{IS_DEMO_MODE ? 'Demo only: no request, email, or database record is created.' : 'Supabase stores consent status; Resend sends confirmation and manages the mailing contact.'}</small></fieldset></form>}</section>
 }

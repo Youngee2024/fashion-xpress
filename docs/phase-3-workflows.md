@@ -2,6 +2,12 @@
 
 Phase 3 adds real Contact, Creator Application, and double-opt-in Newsletter workflows. The browser never receives privileged credentials. Vercel Functions validate requests and use Supabase and Resend from the server.
 
+## Phase 3.1 presentation modes
+
+`VITE_APP_MODE` is a safe public build-time value: `demo` or `live`. Missing or invalid values default to `demo`. Copy `.env.example` to the ignored `.env.local` and leave `VITE_APP_MODE=demo` to run the portfolio locally with `npm run dev`. In Demo Mode, Contact, Creator Application, and Newsletter validate normally and show explicit unsent completion messages. They make no `/api` request, send no email, create no record, and never persist personal form entries. Entries remain in page memory until the visitor selects Done, which clears them. Confirmation and unsubscribe actions are inactive because no subscription exists.
+
+For Vercel portfolio deployments, add `VITE_APP_MODE=demo` in **Settings → Environment Variables** for the desired environments and redeploy. To switch safely to Live Mode, configure the server-only variables below in that environment, set `VITE_APP_MODE=live`, redeploy, and verify `/api/workflow-status` reports available before inviting real submissions. Locally, use `VITE_APP_MODE=live` in `.env.local` with `npm run dev:full`; ordinary Vite cannot run the functions. Live Mode retains the Phase 3 API, consent, double opt-in, unsubscribe, retry, and safe error handling. If server configuration is absent, affected forms are disabled and show a configuration-unavailable message. It never falls back to a simulated success because that could mislead visitors into believing a real submission was received.
+
 ## Architecture and endpoints
 
 | Endpoint | Method | Purpose |
@@ -43,6 +49,7 @@ Copy `.env.example` to `.env.local` and fill it locally. Never commit the popula
 
 | Name | Visibility | Purpose |
 | --- | --- | --- |
+| `VITE_APP_MODE` | Public build-time | `demo` (default) or `live`. Never place credentials in this value. |
 | `SUPABASE_URL` | Server only | Supabase project origin. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | Elevated key used only by Vercel Functions. |
 | `RESEND_API_KEY` | Server only | Resend email/contact API key. |
@@ -57,11 +64,11 @@ Generate the hashing secret locally:
 node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 ```
 
-There are no public Phase 3 variables and no secrets may use a `VITE_` prefix.
+`VITE_APP_MODE` is the only public Phase 3.1 setting. No secret may use a `VITE_` prefix.
 
 ## 4. Run the complete app locally
 
-The ordinary `npm run dev` command starts only Vite and cannot execute `/api` functions. Vite serves a local `available: false` status response so forms stay safely disabled without a missing-resource console error. Install and authenticate the Vercel CLI, then start the Vite app and functions together:
+The ordinary `npm run dev` command starts only Vite and cannot execute `/api` functions. It is sufficient for Demo Mode. In Live Mode, Vite serves a local `available: false` status response so forms stay safely disabled without a missing-resource console error. Install and authenticate the Vercel CLI, then start the Vite app and functions together:
 
 ```bash
 npm install --global vercel

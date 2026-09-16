@@ -8,7 +8,11 @@
 
 A modern, high-fashion e-commerce web application modernized from a legacy static codebase into a modular, interactive React 18 frontend. Features simulated Virtual AR Try-On experiences, dynamic cart management, interactive collection filtering, community showcases, and dynamic product routing.
 
-Phase 3 adds protected Supabase-backed Contact and Creator Application submissions plus a Resend-powered double-opt-in Newsletter workflow. These workflows fail closed until server-only credentials are configured. Checkout, authentication, persistent Community accounts, blockchain, wallets, and garment tracking remain unavailable.
+Phase 3 adds protected Supabase-backed Contact and Creator Application submissions plus a Resend-powered double-opt-in Newsletter workflow. In Live Mode these workflows fail closed until server-only credentials are configured. Real checkout, authentication, persistent Community accounts, blockchain, wallets, and garment tracking remain unavailable.
+
+Phase 3.1 adds an explicit portfolio Demo Mode. It is the default when `VITE_APP_MODE` is missing or invalid. Contact, Creator Application, and Newsletter remain usable for validation and demo completion, but send no API request, email, or database record; form entries stay in memory and are cleared when the visitor acknowledges completion. Run locally with `npm run dev` (or set `VITE_APP_MODE=demo` in an ignored `.env.local`). On Vercel, set the public `VITE_APP_MODE` environment variable to `demo` and redeploy. The guided checkout still makes no payment or order; Community, minting, camera, and AR remain clearly labelled local prototypes.
+
+To enable real submissions, set `VITE_APP_MODE=live` in the relevant Vercel environment and configure every server-only Phase 3 variable described in the setup guide, then redeploy and verify `/api/workflow-status`. Live Mode never falls back to simulated completion when the backend is missing: forms are disabled with a configuration-unavailable message so a visitor cannot mistake an unsent request for a real submission. No server credential may use a `VITE_` prefix.
 
 See [Phase 3 workflow setup](docs/phase-3-workflows.md) for database migration, email/DNS, environment, local development, Vercel deployment, testing, retention, and credential-rotation instructions.
 
