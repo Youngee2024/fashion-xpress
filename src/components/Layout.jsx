@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import { hasErrors, validateNewsletter } from '../data/formValidation'
+import { submitWorkflow } from '../data/workflowApi'
+import { useWorkflowAvailability } from '../hooks/useWorkflowAvailability'
 import { Icon } from './Icons'
-import { DemoComplete, FieldError } from './PrototypeUI'
+import { FieldError } from './PrototypeUI'
+import { ConsentField, Honeypot, ServiceStatus } from './WorkflowUI'
 
 const links = [['/', 'Home'], ['/collections', 'Collections'], ['/ar-tryon', 'AR concept'], ['/community', 'Community'], ['/about', 'About']]
 
 export function Header({ cartCount, onCartOpen }) {
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
-
   useEffect(() => setOpen(false), [pathname])
   useEffect(() => {
     if (!open) return undefined
@@ -16,13 +19,7 @@ export function Header({ cartCount, onCartOpen }) {
     document.addEventListener('keydown', closeOnEscape)
     return () => document.removeEventListener('keydown', closeOnEscape)
   }, [open])
-
-  return <header className="site-header">
-    <Link className="brand" to="/"><span>FX</span> FashionXpress</Link>
-    <button className="icon-button mobile-menu" onClick={() => setOpen(!open)} aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="primary-navigation"><Icon name={open ? 'close' : 'menu'} /></button>
-    <nav id="primary-navigation" className={open ? 'nav-links open' : 'nav-links'} aria-label="Main navigation">{links.map(([to, label]) => <NavLink key={to} to={to} end={to === '/'}>{label}</NavLink>)}</nav>
-    <div className="header-actions"><button className="cart-button" onClick={onCartOpen} aria-label={`Open bag with ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}><Icon name="bag"/>{cartCount > 0 && <span>{cartCount}</span>}</button><Link className="button small" to="/get-started">Creator atelier <Icon name="arrow" size={16}/></Link></div>
-  </header>
+  return <header className="site-header"><Link className="brand" to="/"><span>FX</span> FashionXpress</Link><button className="icon-button mobile-menu" onClick={() => setOpen(!open)} aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="primary-navigation"><Icon name={open ? 'close' : 'menu'} /></button><nav id="primary-navigation" className={open ? 'nav-links open' : 'nav-links'} aria-label="Main navigation">{links.map(([to, label]) => <NavLink key={to} to={to} end={to === '/'}>{label}</NavLink>)}</nav><div className="header-actions"><button className="cart-button" onClick={onCartOpen} aria-label={`Open bag with ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}><Icon name="bag"/>{cartCount > 0 && <span>{cartCount}</span>}</button><Link className="button small" to="/get-started">Creator atelier <Icon name="arrow" size={16}/></Link></div></header>
 }
 
 export function Footer() {
@@ -44,15 +41,43 @@ export function SectionHeading({ eyebrow, title, copy, align = 'left' }) {
 
 export function Newsletter() {
   const [email, setEmail] = useState('')
-  const [error, setError] = useState('')
-  const [complete, setComplete] = useState(false)
+  const [consent, setConsent] = useState(false)
+  const [website, setWebsite] = useState('')
+  const [errors, setErrors] = useState({})
+  const [stage, setStage] = useState('editing')
+  const [message, setMessage] = useState('')
+  const startedAt = useRef(Date.now())
+  const submitting = useRef(false)
+  const availability = useWorkflowAvailability()
 
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault()
-    const nextError = !email.trim() ? 'Enter an email address to complete the demo.' : !/^\S+@\S+\.\S+$/.test(email) ? 'Enter an email address in a valid format.' : ''
-    setError(nextError)
-    if (!nextError) setComplete(true)
+    if (submitting.current || availability !== 'available') return
+    const nextErrors = validateNewsletter({ email, consent })
+    setErrors(nextErrors)
+    if (hasErrors(nextErrors)) return
+    submitting.current = true
+    setStage('submitting')
+    const response = await submitWorkflow('/api/newsletter/subscribe', { email, consent, website, startedAt: startedAt.current })
+    submitting.current = false
+    setMessage(response.message)
+    if (response.ok) {
+      setEmail('')
+      setConsent(false)
+      setWebsite('')
+      setStage('complete')
+    } else {
+      if (response.fields) setErrors(response.fields)
+      setStage('error')
+    }
   }
 
-  return <section className="newsletter panel"><div><span className="eyebrow">The front row</span><h2>Stay ahead of the drop.</h2><p>Explore how a future collection-update flow could feel.</p></div>{complete ? <DemoComplete title="You completed the signup demo." onReset={() => { setComplete(false); setEmail('') }}>No email address was transmitted or added to a mailing list.</DemoComplete> : <form noValidate onSubmit={submit}><label htmlFor="newsletter-email">Email address</label><input id="newsletter-email" aria-invalid={Boolean(error)} aria-describedby={error ? 'newsletter-error newsletter-note' : 'newsletter-note'} type="email" placeholder="you@example.com" value={email} onChange={(event) => { setEmail(event.target.value); if (error) setError('') }}/><FieldError id="newsletter-error">{error}</FieldError><button className="button" type="submit">Complete signup demo <Icon name="arrow" size={16}/></button><small id="newsletter-note" className="prototype-note">Portfolio prototype—no subscription or external request occurs.</small></form>}</section>
+  function reset() {
+    startedAt.current = Date.now()
+    setStage('editing')
+    setMessage('')
+    setErrors({})
+  }
+
+  return <section className="newsletter panel"><div><span className="eyebrow">The front row</span><h2>Stay ahead of the drop.</h2><p>Opt in to occasional collection and creator updates. Confirmation is required.</p></div>{stage === 'complete' ? <div className="newsletter-result" role="status" aria-live="polite"><Icon name="check"/><h3>Check your inbox.</h3><p>{message}</p><button className="text-link" type="button" onClick={reset}>Use another address</button></div> : <form noValidate onSubmit={submit} aria-busy={stage === 'submitting'}><ServiceStatus status={availability} noun="newsletter signup"/>{stage === 'error' && <p className="form-message error" role="alert">{message}</p>}<fieldset disabled={availability !== 'available' || stage === 'submitting'}><label htmlFor="newsletter-email">Email address</label><input id="newsletter-email" name="email" maxLength="254" aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'newsletter-error newsletter-note' : 'newsletter-note'} type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(event) => { setEmail(event.target.value); if (errors.email) setErrors((current) => ({ ...current, email: '' })) }}/><FieldError id="newsletter-error">{errors.email}</FieldError><ConsentField id="newsletter-consent" checked={consent} onChange={(event) => { setConsent(event.target.checked); if (errors.consent) setErrors((current) => ({ ...current, consent: '' })) }} error={errors.consent}>I want to receive FashionXpress email updates.</ConsentField><Honeypot prefix="newsletter" value={website} onChange={(event) => setWebsite(event.target.value)}/><button className="button" type="submit" disabled={availability !== 'available' || stage === 'submitting'}>{stage === 'submitting' ? 'Requesting confirmation…' : <>Join the front row <Icon name="arrow" size={16}/></>}</button><small id="newsletter-note" className="prototype-note">Supabase stores consent status; Resend sends confirmation and manages the mailing contact.</small></fieldset></form>}</section>
 }

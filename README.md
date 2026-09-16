@@ -8,6 +8,10 @@
 
 A modern, high-fashion e-commerce web application modernized from a legacy static codebase into a modular, interactive React 18 frontend. Features simulated Virtual AR Try-On experiences, dynamic cart management, interactive collection filtering, community showcases, and dynamic product routing.
 
+Phase 3 adds protected Supabase-backed Contact and Creator Application submissions plus a Resend-powered double-opt-in Newsletter workflow. These workflows fail closed until server-only credentials are configured. Checkout, authentication, persistent Community accounts, blockchain, wallets, and garment tracking remain unavailable.
+
+See [Phase 3 workflow setup](docs/phase-3-workflows.md) for database migration, email/DNS, environment, local development, Vercel deployment, testing, retention, and credential-rotation instructions.
+
 ---
 
 ## 🔗 Live Demo & Deployment

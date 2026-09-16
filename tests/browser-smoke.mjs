@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 
-const routes = ['/', '/collections', '/collections/neo-safari', '/ar-tryon', '/community', '/about', '/contact', '/get-started', '/mint/neo-safari', '/privacy', '/terms', '/licensing', '/refund-policy', '/accessibility', '/definitely-missing']
+const routes = ['/', '/collections', '/collections/neo-safari', '/ar-tryon', '/community', '/about', '/contact', '/get-started', '/mint/neo-safari', '/privacy', '/terms', '/licensing', '/refund-policy', '/accessibility', '/newsletter/confirm', '/newsletter/unsubscribe', '/definitely-missing']
 const widths = [320, 375, 393, 768, 1024, 1440, 1920]
-const expectedHeadings = ['Wear the', 'Digital pieces.', 'Neo-Safari 2026', 'AR Try-on', 'Ideas look better', 'African creativity,', 'Message', 'Bring what', 'Neo-Safari 2026', 'Privacy, in plain language.', 'Terms for exploring', 'Digital fashion licensing.', 'Purchases are unavailable.', 'Designed for more ways', 'Off the runway.']
+const expectedHeadings = ['Wear the', 'Digital pieces.', 'Neo-Safari 2026', 'AR Try-on', 'Ideas look better', 'African creativity,', 'Message', 'Bring what', 'Neo-Safari 2026', 'Privacy, in plain language.', 'Terms for exploring', 'Digital fashion licensing.', 'Purchases are unavailable.', 'Designed for more ways', 'Confirm your place.', 'Leave the list.', 'Off the runway.']
 
 const target = await fetch('http://127.0.0.1:9333/json/new?about:blank', { method: 'PUT' }).then((response) => response.json())
 const socket = new WebSocket(target.webSocketDebuggerUrl)
@@ -176,13 +176,19 @@ let { result: { value: navigationClosed } } = await send('Runtime.evaluate', { e
 assert.equal(navigationClosed, 'false')
 
 await navigate('http://127.0.0.1:4173/contact')
-await send('Runtime.evaluate', { expression: `document.querySelector('.editorial-form button[type="submit"]').click()` })
-let { result: { value: contactErrorState } } = await send('Runtime.evaluate', { expression: `({ errors: document.querySelectorAll('.field-error').length, invalid: document.querySelectorAll('[aria-invalid="true"]').length, focused: document.activeElement?.id })`, returnByValue: true })
-assert.deepEqual(contactErrorState, { errors: 4, invalid: 4, focused: 'contact-name' })
-await send('Runtime.evaluate', { expression: `(() => { const values = { name:'Ada', email:'ada@example.com', topic:'Press', message:'This is a complete local demonstration message.' }; for (const [name, value] of Object.entries(values)) { const element = document.querySelector('[name="' + name + '"]'); const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(element), 'value').set; setter.call(element, value); element.dispatchEvent(new Event('input', { bubbles:true })); element.dispatchEvent(new Event('change', { bubbles:true })); } document.querySelector('.editorial-form').requestSubmit(); })()` })
-await new Promise((resolve) => setTimeout(resolve, 650))
-let { result: { value: contactSuccess } } = await send('Runtime.evaluate', { expression: `({ complete: Boolean(document.querySelector('.demo-complete')), storage: Object.keys(localStorage).filter((key) => key !== 'fashionxpress.cart.v1') })`, returnByValue: true })
-assert.deepEqual(contactSuccess, { complete: true, storage: [] })
+await new Promise((resolve) => setTimeout(resolve, 200))
+let { result: { value: contactUnavailable } } = await send('Runtime.evaluate', { expression: `({ notice: document.querySelector('.service-status')?.innerText, fieldsetDisabled: document.querySelector('.editorial-form fieldset')?.disabled, submitDisabled: document.querySelector('.editorial-form button[type="submit"]')?.disabled, storage: Object.keys(localStorage).filter((key) => key !== 'fashionxpress.cart.v1') })`, returnByValue: true })
+assert.deepEqual(contactUnavailable, { notice: 'Online contact submissions are not configured on this deployment.', fieldsetDisabled: true, submitDisabled: true, storage: [] })
+
+await navigate('http://127.0.0.1:4173/get-started')
+await new Promise((resolve) => setTimeout(resolve, 200))
+let { result: { value: creatorUnavailable } } = await send('Runtime.evaluate', { expression: `({ notice: document.querySelector('.service-status')?.innerText, fieldsetDisabled: document.querySelector('.editorial-form fieldset')?.disabled })`, returnByValue: true })
+assert.deepEqual(creatorUnavailable, { notice: 'Online creator applications are not configured on this deployment.', fieldsetDisabled: true })
+
+await navigate('http://127.0.0.1:4173/')
+await new Promise((resolve) => setTimeout(resolve, 200))
+let { result: { value: newsletterUnavailable } } = await send('Runtime.evaluate', { expression: `({ notice: document.querySelector('.newsletter .service-status')?.innerText, fieldsetDisabled: document.querySelector('.newsletter fieldset')?.disabled })`, returnByValue: true })
+assert.deepEqual(newsletterUnavailable, { notice: 'Online newsletter signups are not configured on this deployment.', fieldsetDisabled: true })
 
 assert.deepEqual(browserErrors, [], `Browser console errors: ${JSON.stringify(browserErrors)}`)
 

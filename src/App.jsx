@@ -14,6 +14,7 @@ import { Home } from './pages/Home'
 import { AccessibilityStatement, Licensing, Privacy, RefundPolicy, Terms } from './pages/InformationPages'
 import { Mint } from './pages/Mint'
 import { NotFound } from './pages/NotFound'
+import { NewsletterConfirm, NewsletterUnsubscribe } from './pages/NewsletterAction'
 import { ProductDetail } from './pages/ProductDetail'
 
 export default function App() {
@@ -56,6 +57,8 @@ export default function App() {
         <Route path="/licensing" element={<Licensing />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
         <Route path="/accessibility" element={<AccessibilityStatement />} />
+        <Route path="/newsletter/confirm" element={<NewsletterConfirm />} />
+        <Route path="/newsletter/unsubscribe" element={<NewsletterUnsubscribe />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>

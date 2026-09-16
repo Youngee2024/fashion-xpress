@@ -2,3 +2,16 @@
 node_modules/
 dist/
 review-artifacts/
+.env
+.env.*
+!.env.example
+*.log
+test-results/
+playwright-report/
+.browser-profile/
+.supabase/
+.resend/
+supabase/.temp/
+supabase/.branches/
+supabase/config.toml
+provider-config.*

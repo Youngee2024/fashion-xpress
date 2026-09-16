@@ -39,10 +39,10 @@ test('cart persistence stores identifiers only and recovers from corruption', ()
 })
 
 test('contact and creator validation expose useful local errors and accept complete demos', () => {
-  assert.equal(hasErrors(validateContact({ name: '', email: 'wrong', topic: '', message: 'short' })), true)
-  assert.equal(hasErrors(validateContact({ name: 'Ada', email: 'ada@example.com', topic: 'Press', message: 'This is a complete local demonstration message.' })), false)
-  assert.equal(hasErrors(validateCreator({ name: 'Ada', email: 'ada@example.com', portfolio: 'ftp://example.com', specialty: '3D streetwear', vision: 'A sufficiently developed creative direction for this demo.' })), true)
-  assert.equal(hasErrors(validateCreator({ name: 'Ada', email: 'ada@example.com', portfolio: 'https://example.com/work', specialty: '3D streetwear', vision: 'A sufficiently developed creative direction for this demo.' })), false)
+  assert.equal(hasErrors(validateContact({ name: '', email: 'wrong', topic: '', message: 'short', consent: false })), true)
+  assert.equal(hasErrors(validateContact({ name: 'Ada', email: 'ada@example.com', topic: 'Press', message: 'This is a complete local demonstration message.', consent: true })), false)
+  assert.equal(hasErrors(validateCreator({ name: 'Ada', email: 'ada@example.com', location: 'Lagos', portfolio: 'ftp://example.com', specialty: '3D streetwear', vision: 'A sufficiently developed creative direction for this demo.', consent: true })), true)
+  assert.equal(hasErrors(validateCreator({ name: 'Ada', email: 'ada@example.com', location: 'Lagos', portfolio: 'https://example.com/work', specialty: '3D streetwear', vision: 'A sufficiently developed creative direction for this demo.', consent: true })), false)
 })
 
 test('Phase 2 information routes have distinct metadata', () => {

@@ -18,4 +18,13 @@ export default [
   },
   { files: ['src/**/*.{js,jsx}'], ...reactHooks.configs['recommended-latest'] },
   { files: ['src/**/*.{js,jsx}'], ...reactRefresh.configs.vite },
+  {
+    files: ['api/**/*.js', 'server/**/*.js', 'tests/**/*.{js,mjs}', 'scripts/**/*.mjs'],
+    rules: js.configs.recommended.rules,
+    languageOptions: {
+      ecmaVersion: 2024,
+      globals: { ...globals.node, fetch: 'readonly', Response: 'readonly', Request: 'readonly', Headers: 'readonly', TextEncoder: 'readonly', WebSocket: 'readonly' },
+      parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+    },
+  },
 ]

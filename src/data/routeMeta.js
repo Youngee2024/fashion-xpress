@@ -18,6 +18,8 @@ const ROUTE_META = {
   '/licensing': { title: 'Digital Fashion Licensing | FashionXpress', description: 'Explore how a future FashionXpress service would explain creator rights and digital garment licenses.' },
   '/refund-policy': { title: 'Purchase Status | FashionXpress', description: 'Learn why purchases and refunds are unavailable in the non-transactional FashionXpress prototype.' },
   '/accessibility': { title: 'Accessibility | FashionXpress', description: 'Review current accessibility support and known testing limits for the FashionXpress portfolio prototype.' },
+  '/newsletter/confirm': { title: 'Confirm Newsletter | FashionXpress', description: 'Securely confirm your consent to receive FashionXpress collection and creator newsletter updates.' },
+  '/newsletter/unsubscribe': { title: 'Unsubscribe | FashionXpress', description: 'Securely update your FashionXpress newsletter preference and stop future newsletter email.' },
 }
 
 export function getRouteMeta(pathname) {
