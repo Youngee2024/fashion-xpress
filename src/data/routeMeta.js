@@ -10,6 +10,11 @@ const ROUTE_META = {
   '/collections': { title: 'Genesis Collection | FashionXpress', description: 'Explore limited-edition digital garments from the FashionXpress Genesis collection.' },
   '/ar-tryon': { title: 'Camera Preview | FashionXpress', description: 'Preview the experimental FashionXpress camera atelier and explore digital looks.' },
   '/community': { title: 'Creator Community | FashionXpress', description: 'Join conversations with digital fashion designers, collectors, and creative technologists.' },
+  '/auth': { title: 'Community Sign-In | FashionXpress', description: 'Enter the portfolio demo or sign in with a six-digit email code in configured Live Mode.' },
+  '/auth/verify': { title: 'Verify Email Code | FashionXpress', description: 'Verify your six-digit FashionXpress Community email code securely.' },
+  '/profile/setup': { title: 'Set Up Profile | FashionXpress', description: 'Choose a handle and a public FashionXpress Community profile.' },
+  '/profile/edit': { title: 'Edit Profile | FashionXpress', description: 'Edit your public FashionXpress Community profile and account settings.' },
+  '/community-guidelines': { title: 'Community Guidelines | FashionXpress', description: 'Read FashionXpress Community conduct, reporting, and moderation limitations.' },
   '/about': { title: 'About FashionXpress', description: 'Discover how FashionXpress connects African creativity, digital craft, and global culture.' },
   '/contact': { title: 'Contact | FashionXpress', description: 'Find direct contact details for FashionXpress partnerships, collecting, press, and creator support.' },
   '/get-started': { title: 'Creator Atelier | FashionXpress', description: 'Learn how independent digital fashion creators can work with FashionXpress.' },
@@ -24,6 +29,8 @@ const ROUTE_META = {
 
 export function getRouteMeta(pathname) {
   const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname
+  if (/^\/community\/[^/]+$/.test(normalizedPath)) return { title: 'Community Discussion | FashionXpress', description: 'Read and reply to a FashionXpress digital-fashion discussion.' }
+  if (/^\/profile\/[^/]+$/.test(normalizedPath) && !ROUTE_META[normalizedPath]) return { title: 'Community Profile | FashionXpress', description: 'View a FashionXpress Community member profile and public activity.' }
   const productMatch = normalizedPath.match(/^\/collections\/([^/]+)$/)
   if (productMatch) {
     const product = productById[productMatch[1]]

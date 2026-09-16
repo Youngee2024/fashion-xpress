@@ -1,0 +1,1 @@
+export const DEMO_PROFILE = Object.freeze({ id: 'demo-identity', handle: 'runwayguest', display_name: 'Runway Guest', bio: 'A fictional visitor exploring the future of fashion.', location: 'Lagos', identity: 'Community Member', avatar_id: 'acid' })

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 
-const routes = ['/', '/collections', '/collections/neo-safari', '/ar-tryon', '/community', '/about', '/contact', '/get-started', '/mint/neo-safari', '/privacy', '/terms', '/licensing', '/refund-policy', '/accessibility', '/newsletter/confirm', '/newsletter/unsubscribe', '/definitely-missing']
+const routes = ['/', '/collections', '/collections/neo-safari', '/ar-tryon', '/community', '/community/demo-1', '/auth', '/profile/runwayguest', '/community-guidelines', '/about', '/contact', '/get-started', '/mint/neo-safari', '/privacy', '/terms', '/licensing', '/refund-policy', '/accessibility', '/newsletter/confirm', '/newsletter/unsubscribe', '/definitely-missing']
 const widths = [320, 375, 393, 768, 1024, 1440, 1920]
-const expectedHeadings = ['Wear the', 'Digital pieces.', 'Neo-Safari 2026', 'AR Try-on', 'Ideas look better', 'African creativity,', 'Message', 'Bring what', 'Neo-Safari 2026', 'Privacy, in plain language.', 'Terms for exploring', 'Digital fashion licensing.', 'Purchases are unavailable.', 'Designed for more ways', 'Confirm your place.', 'Leave the list.', 'Off the runway.']
+const expectedHeadings = ['Wear the', 'Digital pieces.', 'Neo-Safari 2026', 'AR Try-on', 'Ideas look better', 'How do I price', 'Enter the demo community.', 'Runway Guest', 'Make room for ideas.', 'African creativity,', 'Message', 'Bring what', 'Neo-Safari 2026', 'Privacy, in plain language.', 'Terms for exploring', 'Digital fashion licensing.', 'Purchases are unavailable.', 'Designed for more ways', 'Confirm your place.', 'Leave the list.', 'Off the runway.']
 
 const target = await fetch('http://127.0.0.1:9333/json/new?about:blank', { method: 'PUT' }).then((response) => response.json())
 const socket = new WebSocket(target.webSocketDebuggerUrl)
@@ -17,6 +17,7 @@ const events = new Map()
 const pageHeights = {}
 const browserErrors = []
 const apiRequests = []
+const supabaseRequests = []
 socket.addEventListener('message', ({ data }) => {
   const message = JSON.parse(data)
   if (message.id) {
@@ -28,6 +29,7 @@ socket.addEventListener('message', ({ data }) => {
   }
   if (message.method === 'Runtime.exceptionThrown') browserErrors.push(message.params.exceptionDetails?.text ?? 'Unhandled browser exception')
   if (message.method === 'Network.requestWillBeSent' && new URL(message.params.request.url).pathname.startsWith('/api/')) apiRequests.push(message.params.request.url)
+  if (message.method === 'Network.requestWillBeSent' && /supabase\.co/.test(message.params.request.url)) supabaseRequests.push(message.params.request.url)
   if (message.method === 'Log.entryAdded' && ['error', 'warning'].includes(message.params.entry?.level)) browserErrors.push(`${message.params.entry.text} ${message.params.entry.url ?? ''}`.trim())
   const listeners = events.get(message.method) ?? []
   events.delete(message.method)
@@ -87,7 +89,7 @@ for (const port of [5173, 4173]) {
     for (let index = 0; index < routes.length; index += 1) {
       await navigate(`http://127.0.0.1:${port}${routes[index]}`)
       let initial = await inspect()
-      if (initial.heading?.includes('connection was interrupted')) {
+      if (!initial.heading || initial.heading.includes('connection was interrupted')) {
         await navigate(`http://127.0.0.1:${port}${routes[index]}`)
         initial = await inspect()
       }
@@ -228,6 +230,7 @@ let { result: { value: newsletterCleared } } = await send('Runtime.evaluate', { 
 assert.equal(newsletterCleared.value, '')
 assert.doesNotMatch(JSON.stringify(newsletterCleared), /newsletter@example\.test/)
 assert.deepEqual(apiRequests, [], `Demo Mode made API requests: ${apiRequests.join(', ')}`)
+assert.deepEqual(supabaseRequests, [], `Demo Mode made Supabase requests: ${supabaseRequests.join(', ')}`)
 
 assert.deepEqual(browserErrors, [], `Browser console errors: ${JSON.stringify(browserErrors)}`)
 

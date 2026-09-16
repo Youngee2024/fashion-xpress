@@ -1,60 +1,102 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/AuthState'
 import { Icon } from '../components/Icons'
 import { EmptyState, FieldError, PrototypeNotice } from '../components/PrototypeUI'
+import { COMMUNITY_CATEGORIES, hasValidationErrors, validateDiscussion } from '../data/communityRules'
+import { resetDemoCommunity, useCommunityStore } from '../hooks/useCommunityStore'
 
-const seed = [
-  { id: 1, title: 'How do I price my first digital collection?', author: 'DigitalDesigner', category: 'Marketplace', replies: 24, likes: 42, time: '2h', text: 'I’m launching ten pieces and weighing rarity, craft, and market comparison. What has worked for other creators?' },
-  { id: 2, title: 'Blender vs Maya for fashion design', author: '3DArtist', category: 'Tools', replies: 18, likes: 37, time: '5h', text: 'Making the shift from physical to digital fashion. I’d love perspectives from artists with garment workflows in both.' },
-  { id: 3, title: 'My “Neon Dreams” collection is live', author: 'LunaCouture', category: 'Showcase', replies: 56, likes: 89, time: '1d', text: 'Six months of work, reactive materials, and a lot of iteration. Sharing the complete collection concept for feedback.' },
-  { id: 4, title: 'Making L2 concepts legible for creators', author: 'CryptoCreator', category: 'Technology', replies: 42, likes: 67, time: '2d', text: 'A design discussion about explaining networks, fees, and ownership without making a prototype feel transactional.' },
-]
+export function CommunityDate({ value }) {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? null : <time dateTime={value} title={date.toLocaleString()}>{date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+}
+
+export function AuthorLink({ author }) {
+  return author?.handle ? <Link to={`/profile/${author.handle}`}>@{author.handle}</Link> : <span>Deleted member</span>
+}
 
 export function Community() {
-  const [threads, setThreads] = useState(seed)
-  const [query, setQuery] = useState('')
-  const [liked, setLiked] = useState([])
+  const auth = useAuth()
+  const store = useCommunityStore()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [items, setItems] = useState([])
+  const [total, setTotal] = useState(0)
+  const [hasMore, setHasMore] = useState(false)
+  const [stage, setStage] = useState('loading')
+  const [searchDraft, setSearchDraft] = useState('')
+  const [filters, setFilters] = useState({ search: '', category: '', sort: 'newest' })
+  const [page, setPage] = useState(0)
+  const [reloadKey, setReloadKey] = useState(0)
   const [composer, setComposer] = useState(false)
-  const [draft, setDraft] = useState({ title: '', text: '' })
+  const [draft, setDraft] = useState({ title: '', body: '', category: 'General' })
   const [errors, setErrors] = useState({})
-  const [status, setStatus] = useState('')
+  const [posting, setPosting] = useState(false)
+  const postingRef = useRef(false)
+  const [message, setMessage] = useState(location.state?.announcement ?? '')
   const titleRef = useRef(null)
-  const shown = useMemo(() => threads.filter((thread) => `${thread.title} ${thread.author} ${thread.category}`.toLowerCase().includes(query.trim().toLowerCase())), [threads, query])
+  const composerOpenedRef = useRef(false)
 
-  useEffect(() => { if (composer) titleRef.current?.focus() }, [composer])
+  useEffect(() => {
+    if (!location.state?.announcement) return
+    const heading = document.querySelector('.feed-title h2')
+    heading?.setAttribute('tabindex', '-1')
+    heading?.focus()
+  }, [location.state])
 
-  function toggleLike(id) {
-    const thread = threads.find((item) => item.id === id)
-    const isLiked = liked.includes(id)
-    setLiked((current) => isLiked ? current.filter((likedId) => likedId !== id) : [...current, id])
-    setThreads((current) => current.map((item) => item.id === id ? { ...item, likes: item.likes + (isLiked ? -1 : 1) } : item))
-    setStatus(`${isLiked ? 'Removed local like from' : 'Added local like to'} ${thread.title}. Nothing was published.`)
+  useEffect(() => {
+    if (composer) {
+      composerOpenedRef.current = true
+      titleRef.current?.focus({ preventScroll: true })
+      document.getElementById('discussion-composer')?.scrollIntoView({ block: 'start', behavior: 'instant' })
+    } else if (composerOpenedRef.current) {
+      composerOpenedRef.current = false
+      window.setTimeout(() => document.querySelector('.community-actions button[aria-controls="discussion-composer"]')?.focus(), 0)
+    }
+  }, [composer])
+  useEffect(() => {
+    if (!store) { setStage('unavailable'); return undefined }
+    let active = true
+    store.list({ ...filters, page }).then((result) => {
+      if (!active) return
+      setItems((current) => page === 0 ? result.items : [...current, ...result.items])
+      setTotal(result.total); setHasMore(result.hasMore); setStage('ready')
+    }).catch(() => { if (active) setStage(typeof navigator !== 'undefined' && navigator.onLine === false ? 'offline' : 'error') })
+    return () => { active = false }
+  }, [store, filters, page, reloadKey])
+
+  const refresh = useCallback(() => { setPage(0); setReloadKey((key) => key + 1) }, [])
+  function updateFilters(next) { setStage('loading'); setPage(0); setFilters((current) => ({ ...current, ...next })) }
+  function requireIdentity() {
+    if (auth.user && auth.profile) return true
+    if (auth.user) navigate('/profile/setup?next=%2Fcommunity')
+    else navigate('/auth?next=%2Fcommunity')
+    return false
   }
-
-  function previewDiscussion(event) {
+  async function like(item) {
+    if (!requireIdentity()) return
+    try { await store.toggleLike(item.id, auth.user.id, item.liked); setMessage(auth.mode === 'demo' ? 'Local like updated. Nothing was published online.' : 'Like updated.'); refresh() }
+    catch { setMessage('The like could not be updated. Nothing changed; retry when connected.') }
+  }
+  async function publish(event) {
     event.preventDefault()
-    const nextErrors = {
-      title: draft.title.trim().length < 8 ? 'Use at least 8 characters for a clear title.' : '',
-      text: draft.text.trim().length < 20 ? 'Use at least 20 characters to develop the discussion.' : '',
-    }
+    if (postingRef.current || !requireIdentity()) return
+    const nextErrors = validateDiscussion(draft)
     setErrors(nextErrors)
-    if (nextErrors.title || nextErrors.text) {
-      setStatus('The local preview needs more detail. Your draft has been preserved.')
-      const firstInvalid = nextErrors.title ? titleRef.current : document.getElementById('discussion-body')
-      firstInvalid?.focus()
-      return
-    }
-    setThreads((current) => [{ id: Date.now(), title: draft.title, text: draft.text, author: 'You', category: 'Local preview', replies: 0, likes: 0, time: 'now', local: true }, ...current])
-    setDraft({ title: '', text: '' })
-    setErrors({})
-    setComposer(false)
-    setStatus('Discussion added to this local preview. It was not published online.')
+    if (hasValidationErrors(nextErrors)) { setMessage('Review the highlighted discussion fields.'); titleRef.current?.focus(); return }
+    postingRef.current = true; setPosting(true); setMessage('')
+    try {
+      const created = await store.createDiscussion(draft, auth.user.id)
+      setDraft({ title: '', body: '', category: 'General' }); setComposer(false); setPosting(false); postingRef.current = false
+      navigate(`/community/${created.id}`, { state: { announcement: auth.mode === 'demo' ? 'Local demo discussion created. It was not published online.' : 'Discussion published.' } })
+    } catch { postingRef.current = false; setPosting(false); setMessage('The discussion could not be posted. Your draft is still here; retry when connected.') }
   }
+  function resetDemo() { resetDemoCommunity(); auth.resetDemoProfile(); setComposer(false); setDraft({ title: '', body: '', category: 'General' }); setMessage('Demo Community reset. No online content was affected.'); refresh() }
 
   return <>
-    <section className="community-hero page-shell"><span className="eyebrow">Local community prototype</span><h1>Ideas look better<br/><em>in company.</em></h1><p>Explore demonstration conversations and preview local-only community interactions.</p><PrototypeNotice compact>Posts and likes reset when this page session ends. Nothing is published or sent to a community service.</PrototypeNotice><div className="community-actions"><label className="search"><span className="sr-only">Search demonstration conversations</span><Icon name="search"/><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search demo conversations"/></label><button className="button" onClick={() => setComposer((current) => !current)} aria-expanded={composer} aria-controls="discussion-composer"><Icon name="plus" size={17}/> {composer ? 'Close composer' : 'Create local preview'}</button></div></section>
-    {composer && <section className="page-shell"><form id="discussion-composer" className="composer panel" noValidate onSubmit={previewDiscussion}><div><span className="eyebrow">Local discussion preview</span><button type="button" className="icon-button" onClick={() => setComposer(false)} aria-label="Close discussion composer"><Icon name="close"/></button></div><PrototypeNotice compact>This draft appears only in the current page session and is never published online.</PrototypeNotice>{(errors.title || errors.text) && <div className="error-summary" role="alert">Review the highlighted fields. Your draft is still here.</div>}<label>Discussion title<input ref={titleRef} aria-invalid={Boolean(errors.title)} aria-describedby={errors.title ? 'discussion-title-error' : undefined} value={draft.title} onChange={(event) => { setDraft({ ...draft, title: event.target.value }); setErrors({ ...errors, title: '' }) }}/></label><FieldError id="discussion-title-error">{errors.title}</FieldError><label>Discussion body<textarea id="discussion-body" aria-invalid={Boolean(errors.text)} aria-describedby={errors.text ? 'discussion-body-error' : undefined} rows="4" value={draft.text} onChange={(event) => { setDraft({ ...draft, text: event.target.value }); setErrors({ ...errors, text: '' }) }}/></label><FieldError id="discussion-body-error">{errors.text}</FieldError><button className="button" type="submit">Add to local preview</button></form></section>}
-    <p className="sr-status" role="status" aria-live="polite">{status}</p>
-    <section id="community-feed" className="page-shell community-layout"><div><div className="feed-title"><div><span className="eyebrow">{query ? 'Search results' : 'Demonstration feed'}</span><h2>{query ? `Results for “${query}”` : 'Latest discussions'}</h2></div><span>{shown.length} conversations</span></div><div className="thread-list">{shown.length ? shown.map((thread) => <article className="thread" key={thread.id}><div className="avatar" aria-hidden="true">{thread.author[0]}</div><div><div className="thread-meta"><strong>@{thread.author}</strong><span>{thread.time}</span><i>{thread.category}</i><span className="thread-state">{thread.local ? 'Added locally' : 'Demo content'}</span></div><h3>{thread.title}</h3><p>{thread.text}</p><div className="thread-actions"><span aria-label={`${thread.replies} demonstration replies`}>◯ {thread.replies} replies</span><button className={liked.includes(thread.id) ? 'liked' : ''} onClick={() => toggleLike(thread.id)} aria-pressed={liked.includes(thread.id)} aria-label={`${liked.includes(thread.id) ? 'Unlike' : 'Like'} ${thread.title} locally`}><Icon name="heart" size={16}/> {thread.likes}</button></div></div></article>) : <EmptyState title="No conversations found." actions={<button className="button ghost" onClick={() => setQuery('')}>Clear search</button>}>Try another phrase or return to the full demonstration feed.</EmptyState>}</div></div><aside className="community-side"><div className="side-card"><span className="eyebrow">Event concept</span><h3>Virtual Fashion Week</h3><p>A visual example of how a future community event could be presented.</p><b>DEMONSTRATION DATE</b><a className="button ghost full" href="mailto:hello@fashionxpress.com?subject=FashionXpress%20concept%20enquiry">Ask about the concept</a></div><div className="side-card resources"><h3>Creator resources</h3><Link to="/get-started">Creator atelier <span>→</span></Link><Link to="/licensing">Licensing concept <span>→</span></Link><Link to="/about#values">Community values <span>→</span></Link></div></aside></section>
+    <section className="community-hero page-shell"><span className="eyebrow">{auth.mode === 'demo' ? 'Local Community demo' : 'Community'}</span><h1>Ideas look better<br/><em>in company.</em></h1><p>{auth.mode === 'demo' ? 'Explore fictional conversations and try a complete local Community journey.' : 'Read and join published digital-fashion conversations.'}</p>{auth.mode === 'demo' && <PrototypeNotice compact>Demo posts, replies, likes, and reports stay in this browser tab. Nothing is published or sent to a Community service.</PrototypeNotice>}{auth.mode === 'live' && !auth.configured && <p role="alert" className="service-status unavailable">Live Community is not configured on this deployment. No demo data will be substituted.</p>}<div className="community-actions">{!auth.user ? <Link className="button" to="/auth?next=%2Fcommunity">{auth.mode === 'demo' ? 'Enter Demo Community' : 'Sign in to participate'}</Link> : <button className="button" onClick={() => setComposer((open) => !open)} aria-expanded={composer} aria-controls="discussion-composer"><Icon name="plus" size={17}/> {composer ? 'Close composer' : 'Start a discussion'}</button>}{auth.mode === 'demo' && <button className="button ghost" onClick={resetDemo}>Reset demo community</button>}{auth.profile && <Link className="text-link" to={`/profile/${auth.profile.handle}`}>View your profile</Link>}</div></section>
+    {composer && <section className="page-shell"><form id="discussion-composer" className="composer panel" onSubmit={publish} noValidate aria-busy={posting}><div><span className="eyebrow">{auth.mode === 'demo' ? 'Local discussion preview' : 'New discussion'}</span><button type="button" className="icon-button" onClick={() => setComposer(false)} aria-label="Close discussion composer"><Icon name="close"/></button></div>{auth.mode === 'demo' && <PrototypeNotice compact>This discussion appears only in the current browser tab and is not published online.</PrototypeNotice>}<label>Discussion title<input ref={titleRef} value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} maxLength="120" aria-invalid={Boolean(errors.title)}/></label><FieldError>{errors.title}</FieldError><label>Category<select value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })}>{COMMUNITY_CATEGORIES.map((category) => <option key={category}>{category}</option>)}</select></label><label>Discussion body<textarea value={draft.body} onChange={(event) => setDraft({ ...draft, body: event.target.value })} maxLength="5000" rows="5" aria-invalid={Boolean(errors.body)}/></label><FieldError>{errors.body}</FieldError><small>Plain text only; no links, markup, or embeds.</small><button className="button" disabled={posting}>{posting ? 'Posting…' : auth.mode === 'demo' ? 'Add local discussion' : 'Publish discussion'}</button></form></section>}
+    <p className="sr-status" role="status" aria-live="polite">{message}</p>
+    <section id="community-feed" className="page-shell community-layout"><div><div className="feed-title"><div><span className="eyebrow">{auth.mode === 'demo' ? 'Demonstration feed' : 'Published feed'}</span><h2>Latest discussions</h2></div><span>{total} {total === 1 ? 'conversation' : 'conversations'}</span></div><div className="community-filter-row"><form role="search" onSubmit={(event) => { event.preventDefault(); updateFilters({ search: searchDraft.trim() }) }}><label className="search"><span className="sr-only">Search discussions</span><Icon name="search"/><input value={searchDraft} onChange={(event) => setSearchDraft(event.target.value)} placeholder="Search discussions" maxLength="80"/></label><button type="submit">Search</button></form><label>Category<select value={filters.category} onChange={(event) => updateFilters({ category: event.target.value })}><option value="">All</option>{COMMUNITY_CATEGORIES.map((category) => <option key={category}>{category}</option>)}</select></label><label>Sort<select value={filters.sort} onChange={(event) => updateFilters({ sort: event.target.value })}><option value="newest">Newest</option><option value="active">Most active</option><option value="liked">Most liked</option></select></label></div>{stage === 'loading' && <div className="community-skeleton" role="status" aria-label="Loading discussions"><span/><span/><span/></div>}{stage === 'unavailable' && <p role="alert">Live Community configuration is unavailable.</p>}{['error', 'offline'].includes(stage) && <div role="alert" className="panel community-error"><h3>{stage === 'offline' ? 'You are offline.' : 'Discussions could not load.'}</h3><p>No demo content has been substituted for live data.</p><button className="button ghost" onClick={refresh}>Retry</button></div>}{stage === 'ready' && <div className="thread-list">{items.length ? items.map((item) => <article className="thread" key={item.id}><div className={`avatar avatar-${item.author?.avatar_id ?? 'acid'}`} aria-hidden="true">{item.author?.display_name?.[0] ?? 'F'}</div><div><div className="thread-meta"><AuthorLink author={item.author}/><CommunityDate value={item.created_at}/><i>{item.category}</i>{item.edited_at && <span>Edited</span>}</div><h3><Link to={`/community/${item.id}`}>{item.title}</Link></h3><p>{item.body.length > 220 ? `${item.body.slice(0, 220)}…` : item.body}</p><div className="thread-actions"><Link to={`/community/${item.id}`}>{item.reply_count} {item.reply_count === 1 ? 'reply' : 'replies'}</Link><button onClick={() => like(item)} aria-pressed={Boolean(item.liked)} aria-label={`${item.liked ? 'Unlike' : 'Like'} ${item.title}`}><Icon name="heart" size={16}/> {item.like_count}</button></div></div></article>) : <EmptyState title="No conversations found." actions={<button className="button ghost" onClick={() => { setSearchDraft(''); updateFilters({ search: '', category: '' }) }}>Clear filters</button>}>Try a different search or category.</EmptyState>}{hasMore && <button className="button ghost load-more" onClick={() => { setStage('loading'); setPage((current) => current + 1) }}>Load more discussions</button>}</div>}</div><aside className="community-side"><div className="side-card"><span className="eyebrow">Community guidelines</span><h3>Make room for ideas.</h3><p>Respect creators. Do not post harassment, hate, spam, private data, or unsafe content.</p><Link className="text-link" to="/community-guidelines">Read guidelines →</Link></div><div className="side-card resources"><h3>Creator resources</h3><Link to="/get-started">Creator atelier <span>→</span></Link><Link to="/licensing">Licensing concept <span>→</span></Link><Link to="/about#values">Community values <span>→</span></Link></div></aside></section>
   </>
 }

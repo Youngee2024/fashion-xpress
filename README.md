@@ -14,6 +14,8 @@ Phase 3.1 adds an explicit portfolio Demo Mode. It is the default when `VITE_APP
 
 To enable real submissions, set `VITE_APP_MODE=live` in the relevant Vercel environment and configure every server-only Phase 3 variable described in the setup guide, then redeploy and verify `/api/workflow-status`. Live Mode never falls back to simulated completion when the backend is missing: forms are disabled with a configuration-unavailable message so a visitor cannot mistake an unsent request for a real submission. No server credential may use a `VITE_` prefix.
 
+Phase 4 adds passwordless Community accounts and RLS-protected publishing in Live Mode, with a fictional, memory-only Demo Community when `VITE_APP_MODE=demo`. The frontend uses only `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`; the service-role key remains server-only. Live account deletion is a separate protected API operation, and Community reports require manual administrative review. See [Phase 4 setup and operations](docs/phase-4-auth-community.md) before enabling Live Mode.
+
 See [Phase 3 workflow setup](docs/phase-3-workflows.md) for database migration, email/DNS, environment, local development, Vercel deployment, testing, retention, and credential-rotation instructions.
 
 ---

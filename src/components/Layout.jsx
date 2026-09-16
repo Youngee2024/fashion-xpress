@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useAuth } from '../auth/AuthState'
 import { hasErrors, validateNewsletter } from '../data/formValidation'
 import { IS_DEMO_MODE } from '../data/appMode'
 import { runWorkflow } from '../data/workflowApi'
@@ -11,6 +12,7 @@ import { ConsentField, Honeypot, PortfolioDemoIndicator, ServiceStatus } from '.
 const links = [['/', 'Home'], ['/collections', 'Collections'], ['/ar-tryon', 'AR concept'], ['/community', 'Community'], ['/about', 'About']]
 
 export function Header({ cartCount, onCartOpen }) {
+  const auth = useAuth()
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
   useEffect(() => setOpen(false), [pathname])
@@ -20,11 +22,11 @@ export function Header({ cartCount, onCartOpen }) {
     document.addEventListener('keydown', closeOnEscape)
     return () => document.removeEventListener('keydown', closeOnEscape)
   }, [open])
-  return <header className="site-header"><Link className="brand" to="/"><span>FX</span> FashionXpress</Link><button className="icon-button mobile-menu" onClick={() => setOpen(!open)} aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="primary-navigation"><Icon name={open ? 'close' : 'menu'} /></button><nav id="primary-navigation" className={open ? 'nav-links open' : 'nav-links'} aria-label="Main navigation">{links.map(([to, label]) => <NavLink key={to} to={to} end={to === '/'}>{label}</NavLink>)}</nav><div className="header-actions"><button className="cart-button" onClick={onCartOpen} aria-label={`Open bag with ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}><Icon name="bag"/>{cartCount > 0 && <span>{cartCount}</span>}</button><Link className="button small" to="/get-started">Creator atelier <Icon name="arrow" size={16}/></Link></div></header>
+  return <header className="site-header"><Link className="brand" to="/"><span>FX</span> FashionXpress</Link><button className="icon-button mobile-menu" onClick={() => setOpen(!open)} aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="primary-navigation"><Icon name={open ? 'close' : 'menu'} /></button><nav id="primary-navigation" className={open ? 'nav-links open' : 'nav-links'} aria-label="Main navigation">{links.map(([to, label]) => <NavLink key={to} to={to} end={to === '/'}>{label}</NavLink>)}</nav><div className="header-actions"><Link className="account-link" to={auth.profile ? `/profile/${auth.profile.handle}` : auth.user ? '/profile/setup' : '/auth?next=%2Fcommunity'} aria-label={auth.profile ? `Your profile, ${auth.profile.display_name}` : 'Community sign-in'}>{auth.profile ? `@${auth.profile.handle}` : auth.mode === 'demo' ? 'Demo entry' : 'Sign in'}</Link><button className="cart-button" onClick={onCartOpen} aria-label={`Open bag with ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}><Icon name="bag"/>{cartCount > 0 && <span>{cartCount}</span>}</button><Link className="button small" to="/get-started">Creator atelier <Icon name="arrow" size={16}/></Link></div></header>
 }
 
 export function Footer() {
-  return <footer><div><Link className="brand" to="/"><span>FX</span> FashionXpress</Link><p>Where culture, code, and couture converge—in a portfolio prototype.</p></div><div><h4>Explore</h4><Link to="/collections">Collections</Link><Link to="/ar-tryon">AR concept</Link><Link to="/community">Community</Link></div><div><h4>Company</h4><Link to="/about">About us</Link><Link to="/contact">Contact</Link><Link to="/get-started">Creator atelier</Link></div><div><h4>Information</h4><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link><Link to="/licensing">Licensing</Link><Link to="/refund-policy">Purchase status</Link><Link to="/accessibility">Accessibility</Link></div><div className="footer-bottom"><span>© 2026 FashionXpress · Portfolio concept</span><span>Lagos · London · Everywhere</span></div></footer>
+  return <footer><div><Link className="brand" to="/"><span>FX</span> FashionXpress</Link><p>Where culture, code, and couture converge—in a portfolio prototype.</p></div><div><h4>Explore</h4><Link to="/collections">Collections</Link><Link to="/ar-tryon">AR concept</Link><Link to="/community">Community</Link></div><div><h4>Company</h4><Link to="/about">About us</Link><Link to="/contact">Contact</Link><Link to="/get-started">Creator atelier</Link></div><div><h4>Information</h4><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link><Link to="/community-guidelines">Community guidelines</Link><Link to="/licensing">Licensing</Link><Link to="/refund-policy">Purchase status</Link><Link to="/accessibility">Accessibility</Link></div><div className="footer-bottom"><span>© 2026 FashionXpress · Portfolio concept</span><span>Lagos · London · Everywhere</span></div></footer>
 }
 
 export function Layout({ children, cartCount, onCartOpen }) {

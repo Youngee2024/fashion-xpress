@@ -64,7 +64,7 @@ Generate the hashing secret locally:
 node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 ```
 
-`VITE_APP_MODE` is the only public Phase 3.1 setting. No secret may use a `VITE_` prefix.
+`VITE_APP_MODE` is the only public Phase 3.1 setting. Phase 4 additionally uses the public Supabase URL and publishable/anon key for Auth and Community; see [Phase 4 setup](phase-4-auth-community.md). No secret may use a `VITE_` prefix.
 
 ## 4. Run the complete app locally
 
