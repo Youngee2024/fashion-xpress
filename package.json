@@ -8,6 +8,7 @@
     "dev:full": "vercel dev",
     "build": "vite build",
     "lint": "eslint .",
+    "readiness": "node scripts/readiness.mjs",
     "test": "node --test",
     "check": "npm run lint && npm run test && npm run build",
     "preview": "vite preview"

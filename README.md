@@ -22,6 +22,8 @@ Phase 6 adds a local Demo Mint Studio and unifies checkout concepts and mint sim
 
 See [Phase 3 workflow setup](docs/phase-3-workflows.md) for database migration, email/DNS, environment, local development, Vercel deployment, testing, retention, and credential-rotation instructions.
 
+Phase 8 consolidates the public/server environment contract and adds a provider-free readiness check. Run `npm run readiness` for the default Demo deployment or `npm run readiness -- --mode=live` when validating an isolated Live staging configuration. The command never contacts providers or prints values. See the [Live-service readiness and deployment guide](docs/live-service-readiness.md) for the capability matrix, migration review, exact Supabase/Resend/Vercel activation procedures, and rollback checklist. The public portfolio remains in Demo Mode.
+
 ---
 
 ## 🔗 Live Demo & Deployment

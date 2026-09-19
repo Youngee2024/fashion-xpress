@@ -1,12 +1,4 @@
-const REQUIRED_SERVER_VARIABLES = [
-  'SUPABASE_URL',
-  'SUPABASE_SERVICE_ROLE_KEY',
-  'RESEND_API_KEY',
-  'EMAIL_FROM',
-  'EMAIL_ADMIN_TO',
-  'PUBLIC_APP_URL',
-  'FORM_SECURITY_SECRET',
-]
+import { SERVER_WORKFLOW_VARIABLES } from '../config/environment-contract.js'
 
 export class ConfigurationError extends Error {
   constructor() {
@@ -16,7 +8,7 @@ export class ConfigurationError extends Error {
 }
 
 export function readConfig(environment = process.env) {
-  if (REQUIRED_SERVER_VARIABLES.some((name) => !environment[name]?.trim())) throw new ConfigurationError()
+  if (SERVER_WORKFLOW_VARIABLES.some((name) => !environment[name]?.trim())) throw new ConfigurationError()
 
   let publicAppUrl
   let supabaseUrl
