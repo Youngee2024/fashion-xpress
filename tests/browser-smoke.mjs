@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 
 const routes = ['/', '/collections', '/collections/neo-safari', '/checkout', '/demo-collection', '/ar-tryon', '/community', '/community/demo-1', '/auth', '/profile/runwayguest', '/community-guidelines', '/about', '/contact', '/get-started', '/mint/neo-safari', '/privacy', '/terms', '/licensing', '/refund-policy', '/accessibility', '/newsletter/confirm', '/newsletter/unsubscribe', '/definitely-missing']
 const widths = [320, 375, 393, 768, 1024, 1440, 1920]
-const expectedHeadings = ['Wear the', 'Digital pieces.', 'Neo-Safari 2026', 'Bag review.', 'Demo Collection.', 'AR Try-on', 'Ideas look better', 'How do I price', 'Enter the demo community.', 'Runway Guest', 'Make room for ideas.', 'African creativity,', 'Message', 'Bring what', 'Neo-Safari 2026', 'Privacy, in plain language.', 'Terms for exploring', 'Digital fashion licensing.', 'Purchases are unavailable.', 'Designed for more ways', 'Confirm your place.', 'Leave the list.', 'Off the runway.']
+const expectedHeadings = ['Wear the', 'Digital pieces.', 'Neo-Safari 2026', 'Bag review.', 'Demo Vault.', 'Style it locally.', 'Ideas look better', 'How do I price', 'Enter the demo community.', 'Runway Guest', 'Make room for ideas.', 'African creativity,', 'Message', 'Bring what', 'Metadata.', 'Privacy, in plain language.', 'Terms for exploring', 'Digital fashion licensing.', 'Purchases are unavailable.', 'Designed for more ways', 'Confirm your place.', 'Leave the list.', 'Off the runway.']
 
 const target = await fetch('http://127.0.0.1:9333/json/new?about:blank', { method: 'PUT' }).then((response) => response.json())
 const socket = new WebSocket(target.webSocketDebuggerUrl)
@@ -13,7 +13,6 @@ await new Promise((resolve, reject) => {
 
 let requestId = 0
 const pending = new Map()
-const events = new Map()
 const pageHeights = {}
 const browserErrors = []
 const apiRequests = []
@@ -33,9 +32,6 @@ socket.addEventListener('message', ({ data }) => {
   if (message.method === 'Network.requestWillBeSent' && /supabase\.co/.test(message.params.request.url)) supabaseRequests.push(message.params.request.url)
   if (message.method === 'Network.requestWillBeSent' && /paystack|flutterwave|stripe|checkout\.com/i.test(message.params.request.url)) paymentRequests.push(message.params.request.url)
   if (message.method === 'Log.entryAdded' && ['error', 'warning'].includes(message.params.entry?.level)) browserErrors.push(`${message.params.entry.text} ${message.params.entry.url ?? ''}`.trim())
-  const listeners = events.get(message.method) ?? []
-  events.delete(message.method)
-  listeners.forEach((resolve) => resolve(message.params))
 })
 
 function send(method, params = {}) {
@@ -44,16 +40,18 @@ function send(method, params = {}) {
   return new Promise((resolve, reject) => pending.set(id, { resolve, reject }))
 }
 
-function once(method) {
-  return new Promise((resolve) => events.set(method, [...(events.get(method) ?? []), resolve]))
-}
-
 async function navigate(url, reload = false) {
-  const loaded = once('Page.loadEventFired')
+  const before = await send('Runtime.evaluate', { expression: `({ href: location.href, timeOrigin: performance.timeOrigin })`, returnByValue: true })
   if (reload) await send('Page.reload', { ignoreCache: true })
   else await send('Page.navigate', { url })
-  await loaded
-  await new Promise((resolve) => setTimeout(resolve, 80))
+  await new Promise((resolve) => setTimeout(resolve, 75))
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    const { result } = await send('Runtime.evaluate', { expression: `({ ready: document.readyState, heading: Boolean(document.querySelector('h1')), href: location.href, timeOrigin: performance.timeOrigin })`, returnByValue: true })
+    const changedDocument = result.value?.timeOrigin !== before.result.value?.timeOrigin || result.value?.href !== before.result.value?.href
+    if (changedDocument && result.value?.ready !== 'loading' && result.value?.heading) return
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+  throw new Error(`Timed out waiting for a page heading after ${reload ? 'reload' : `navigation to ${url}`}.`)
 }
 
 async function inspect() {
@@ -215,11 +213,11 @@ let { result: { value: refreshedReceipt } } = await send('Runtime.evaluate', { e
 assert.equal(refreshedReceipt, 'Demo checkout complete.')
 await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-controls .button').click()` })
 await new Promise((resolve) => setTimeout(resolve, 100))
-let { result: { value: vaultState } } = await send('Runtime.evaluate', { expression: `({ path: location.pathname, cards: document.querySelectorAll('.vault-group .checkout-item').length, productLink: document.querySelector('.vault-group .checkout-item a')?.getAttribute('href'), onlineClaim: document.querySelector('.demo-vault>p')?.innerText })`, returnByValue: true })
+let { result: { value: vaultState } } = await send('Runtime.evaluate', { expression: `({ path: location.pathname, cards: document.querySelectorAll('.vault-group .vault-piece').length, productLink: document.querySelector('.vault-group .vault-piece a')?.getAttribute('href'), onlineClaim: document.querySelector('.demo-vault>p')?.innerText })`, returnByValue: true })
 assert.equal(vaultState.path, '/demo-collection')
 assert.equal(vaultState.cards, 1)
 assert.equal(vaultState.productLink, '/collections/neo-safari')
-assert.match(vaultState.onlineClaim, /not owned, minted, licensed, or stored online/i)
+assert.match(vaultState.onlineClaim, /nothing is owned, minted, licensed.*stored online.*on-chain/i)
 await assertMobileState('Demo Collection')
 await send('Runtime.evaluate', { expression: `window.confirm = () => true; document.querySelector('.demo-vault .button.ghost').click()` })
 let { result: { value: resetState } } = await send('Runtime.evaluate', { expression: `({ empty: Boolean(document.querySelector('.checkout-empty')), stored: sessionStorage.getItem('fashionxpress.demoCollection.v1') })`, returnByValue: true })
@@ -241,8 +239,8 @@ await navigate('http://127.0.0.1:4173/collections')
 let { result: { value: filterState } } = await send('Runtime.evaluate', { expression: `({ total: document.querySelectorAll('.filter-bar button[aria-pressed]').length, selected: document.querySelectorAll('.filter-bar button[aria-pressed="true"]').length, cards: document.querySelectorAll('.collection-body .product-card').length, visibleCards: [...document.querySelectorAll('.collection-body .product-card')].filter((card) => getComputedStyle(card).display !== 'none').length })`, returnByValue: true })
 assert.deepEqual(filterState, { total: 4, selected: 1, cards: 6, visibleCards: 6 })
 await navigate('http://127.0.0.1:4173/ar-tryon')
-let { result: { value: outfitState } } = await send('Runtime.evaluate', { expression: `({ total: document.querySelectorAll('.outfit-list button[aria-pressed]').length, selected: document.querySelectorAll('.outfit-list button[aria-pressed="true"]').length, captureDisabled: document.querySelector('.capture') === null || document.querySelector('.capture').disabled })`, returnByValue: true })
-assert.deepEqual(outfitState, { total: 4, selected: 1, captureDisabled: true })
+let { result: { value: outfitState } } = await send('Runtime.evaluate', { expression: `({ total: document.querySelectorAll('.tryon-garments button[aria-pressed]').length, selected: document.querySelectorAll('.tryon-garments button[aria-pressed="true"]').length, captureDisabled: document.querySelector('.tryon-capture') === null || document.querySelector('.tryon-capture').disabled })`, returnByValue: true })
+assert.deepEqual(outfitState, { total: 6, selected: 1, captureDisabled: true })
 
 await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
 let { result: { value: reducedMotionState } } = await send('Runtime.evaluate', { expression: `({ matches: matchMedia('(prefers-reduced-motion: reduce)').matches, scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior, animationName: getComputedStyle(document.querySelector('.camera-chrome span i')).animationName })`, returnByValue: true })

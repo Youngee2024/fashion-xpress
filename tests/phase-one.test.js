@@ -21,6 +21,19 @@ test('Vercel rewrites direct routes to the SPA entry', () => {
   for (const assetOrFunction of ['/api/contact', '/api/newsletter/confirm', '/assets/index.js', '/images/hero-model.jpg', '/favicon.svg', '/robots.txt']) assert.equal(spaRewrite.test(assetOrFunction), false, assetOrFunction)
 })
 
+test('Vercel applies restrictive browser headers without blocking local Try-On media or Live Supabase', () => {
+  const config = JSON.parse(readFileSync('vercel.json', 'utf8'))
+  const globalHeaders = Object.fromEntries(config.headers.find(({ source }) => source === '/(.*)').headers.map(({ key, value }) => [key, value]))
+  assert.match(globalHeaders['Content-Security-Policy'], /frame-ancestors 'none'/)
+  assert.match(globalHeaders['Content-Security-Policy'], /connect-src 'self' https:\/\/\*\.supabase\.co wss:\/\/\*\.supabase\.co/)
+  assert.match(globalHeaders['Content-Security-Policy'], /img-src 'self' blob: data:/)
+  assert.equal(globalHeaders['Permissions-Policy'], 'camera=(self), microphone=(), geolocation=(), payment=()')
+  assert.equal(globalHeaders['Referrer-Policy'], 'strict-origin-when-cross-origin')
+  assert.equal(globalHeaders['X-Content-Type-Options'], 'nosniff')
+  assert.equal(globalHeaders['X-Frame-Options'], 'DENY')
+  assert.equal(config.headers.find(({ source }) => source === '/assets/(.*)').headers[0].value, 'public, max-age=31536000, immutable')
+})
+
 test('every public route has distinct useful metadata', () => {
   const routes = ['/', '/collections', '/collections/neo-safari', '/ar-tryon', '/community', '/about', '/contact', '/get-started', '/mint/neo-safari', '/newsletter/confirm', '/newsletter/unsubscribe', '/missing']
   const metadata = routes.map(getRouteMeta)
