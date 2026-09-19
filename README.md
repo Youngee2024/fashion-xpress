@@ -16,6 +16,8 @@ To enable real submissions, set `VITE_APP_MODE=live` in the relevant Vercel envi
 
 Phase 4 adds passwordless Community accounts and RLS-protected publishing in Live Mode, with a fictional, memory-only Demo Community when `VITE_APP_MODE=demo`. The frontend uses only `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`; the service-role key remains server-only. Live account deletion is a separate protected API operation, and Community reports require manual administrative review. See [Phase 4 setup and operations](docs/phase-4-auth-community.md) before enabling Live Mode.
 
+Phase 5 adds a complete, demo-only checkout journey: bag review, fictional digital identity, concept licence selection, neutral payment demonstration, final review, local receipt, and a session-only Demo Collection. It never renders payment credential fields, contacts a payment provider, creates an order, or transfers ownership. Product quantities remain in the namespaced persistent bag until completion; completed pieces then move into a non-sensitive `sessionStorage` demonstration record that disappears when the browser session ends or the visitor resets it.
+
 See [Phase 3 workflow setup](docs/phase-3-workflows.md) for database migration, email/DNS, environment, local development, Vercel deployment, testing, retention, and credential-rotation instructions.
 
 ---

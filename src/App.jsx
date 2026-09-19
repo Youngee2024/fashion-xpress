@@ -4,10 +4,13 @@ import { AuthProvider } from './auth/AuthContext'
 import { CartDrawer } from './components/CartDrawer'
 import { Layout } from './components/Layout'
 import { RouteMeta } from './components/RouteMeta'
-import { readCart, writeCart } from './data/cartStorage'
+import { normalizeCart, readCart, writeCart } from './data/cartStorage'
+import { removeCompletedFromCart } from './data/demoCheckout'
+import { productById } from './data/products'
 import { About } from './pages/About'
 import { ARTryOn } from './pages/ARTryOn'
 import { Collections } from './pages/Collections'
+import { Checkout, CheckoutComplete, DemoCollection } from './pages/Checkout'
 import { Community } from './pages/Community'
 import { Discussion } from './pages/Discussion'
 import { AuthPage, RequireAuth, VerifyOtpPage } from './pages/AuthPage'
@@ -43,6 +46,14 @@ export default function App() {
     setCartOpen(true)
   }
 
+  function completeDemoItems(items) {
+    setCart((current) => removeCompletedFromCart(current, items))
+  }
+
+  function restartDemoItems(items) {
+    setCart((current) => normalizeCart([...current, ...items.filter((item) => productById[item.id])]))
+  }
+
   return <AuthProvider>
     <RouteMeta />
     <Layout cartCount={cartCount} onCartOpen={openCart}>
@@ -50,6 +61,9 @@ export default function App() {
         <Route path="/" element={<Home onAdd={add} />} />
         <Route path="/collections" element={<Collections onAdd={add} />} />
         <Route path="/collections/:id" element={<ProductDetail onAdd={add} />} />
+        <Route path="/checkout" element={<Checkout cart={cart} onQuantityChange={changeQuantity} onRemove={removeFromCart} onCompleted={completeDemoItems} />} />
+        <Route path="/checkout/complete" element={<CheckoutComplete onRestart={restartDemoItems} />} />
+        <Route path="/demo-collection" element={<DemoCollection />} />
         <Route path="/ar-tryon" element={<ARTryOn />} />
         <Route path="/community" element={<Community />} />
         <Route path="/community/:id" element={<Discussion />} />

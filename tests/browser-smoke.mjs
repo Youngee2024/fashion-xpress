@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 
-const routes = ['/', '/collections', '/collections/neo-safari', '/ar-tryon', '/community', '/community/demo-1', '/auth', '/profile/runwayguest', '/community-guidelines', '/about', '/contact', '/get-started', '/mint/neo-safari', '/privacy', '/terms', '/licensing', '/refund-policy', '/accessibility', '/newsletter/confirm', '/newsletter/unsubscribe', '/definitely-missing']
+const routes = ['/', '/collections', '/collections/neo-safari', '/checkout', '/demo-collection', '/ar-tryon', '/community', '/community/demo-1', '/auth', '/profile/runwayguest', '/community-guidelines', '/about', '/contact', '/get-started', '/mint/neo-safari', '/privacy', '/terms', '/licensing', '/refund-policy', '/accessibility', '/newsletter/confirm', '/newsletter/unsubscribe', '/definitely-missing']
 const widths = [320, 375, 393, 768, 1024, 1440, 1920]
-const expectedHeadings = ['Wear the', 'Digital pieces.', 'Neo-Safari 2026', 'AR Try-on', 'Ideas look better', 'How do I price', 'Enter the demo community.', 'Runway Guest', 'Make room for ideas.', 'African creativity,', 'Message', 'Bring what', 'Neo-Safari 2026', 'Privacy, in plain language.', 'Terms for exploring', 'Digital fashion licensing.', 'Purchases are unavailable.', 'Designed for more ways', 'Confirm your place.', 'Leave the list.', 'Off the runway.']
+const expectedHeadings = ['Wear the', 'Digital pieces.', 'Neo-Safari 2026', 'Bag review.', 'Demo Collection.', 'AR Try-on', 'Ideas look better', 'How do I price', 'Enter the demo community.', 'Runway Guest', 'Make room for ideas.', 'African creativity,', 'Message', 'Bring what', 'Neo-Safari 2026', 'Privacy, in plain language.', 'Terms for exploring', 'Digital fashion licensing.', 'Purchases are unavailable.', 'Designed for more ways', 'Confirm your place.', 'Leave the list.', 'Off the runway.']
 
 const target = await fetch('http://127.0.0.1:9333/json/new?about:blank', { method: 'PUT' }).then((response) => response.json())
 const socket = new WebSocket(target.webSocketDebuggerUrl)
@@ -18,6 +18,7 @@ const pageHeights = {}
 const browserErrors = []
 const apiRequests = []
 const supabaseRequests = []
+const paymentRequests = []
 socket.addEventListener('message', ({ data }) => {
   const message = JSON.parse(data)
   if (message.id) {
@@ -30,6 +31,7 @@ socket.addEventListener('message', ({ data }) => {
   if (message.method === 'Runtime.exceptionThrown') browserErrors.push(message.params.exceptionDetails?.text ?? 'Unhandled browser exception')
   if (message.method === 'Network.requestWillBeSent' && new URL(message.params.request.url).pathname.startsWith('/api/')) apiRequests.push(message.params.request.url)
   if (message.method === 'Network.requestWillBeSent' && /supabase\.co/.test(message.params.request.url)) supabaseRequests.push(message.params.request.url)
+  if (message.method === 'Network.requestWillBeSent' && /paystack|flutterwave|stripe|checkout\.com/i.test(message.params.request.url)) paymentRequests.push(message.params.request.url)
   if (message.method === 'Log.entryAdded' && ['error', 'warning'].includes(message.params.entry?.level)) browserErrors.push(`${message.params.entry.text} ${message.params.entry.url ?? ''}`.trim())
   const listeners = events.get(message.method) ?? []
   events.delete(message.method)
@@ -68,12 +70,20 @@ async function inspect() {
       brokenImages: [...document.images].filter((image) => image.complete && image.naturalWidth === 0).length,
       unsizedImages: [...document.images].filter((image) => !image.hasAttribute('width') || !image.hasAttribute('height')).length,
       unlabelledFields: [...document.querySelectorAll('input,select,textarea')].filter((field) => !field.labels?.length && !field.getAttribute('aria-label') && !field.getAttribute('aria-labelledby')).length,
-      smallTargets: [...document.querySelectorAll('a[href],button,input,select,textarea')].filter((target) => { const rect = target.getBoundingClientRect(); return rect.width > 0 && rect.height > 0 && (rect.width < 44 || rect.height < 44) }).slice(0, 8).map((target) => ({ tag:target.tagName, className:target.className, text:target.innerText?.trim().slice(0,30), width:target.getBoundingClientRect().width, height:target.getBoundingClientRect().height })),
+      smallTargets: [...document.querySelectorAll('a[href],button,input,select,textarea')].filter((target) => { const rect = target.getBoundingClientRect(); const labelRect = target.closest('label')?.getBoundingClientRect(); const hasLargeLabel = labelRect && labelRect.width >= 44 && labelRect.height >= 44; return rect.width > 0 && rect.height > 0 && !hasLargeLabel && (rect.width < 44 || rect.height < 44) }).slice(0, 8).map((target) => ({ tag:target.tagName, className:target.className, text:target.innerText?.trim().slice(0,30), width:target.getBoundingClientRect().width, height:target.getBoundingClientRect().height })),
       unnamedButtons: [...document.querySelectorAll('button')].filter((button) => !button.disabled && !button.innerText.trim() && !button.getAttribute('aria-label')).length
     })`,
     returnByValue: true,
   })
   return result.value
+}
+
+async function assertMobileState(label) {
+  const state = await inspect()
+  assert.equal(state.overflow, false, `${label} overflowed on mobile: ${JSON.stringify(state.overflowElements)}`)
+  assert.equal(state.brokenImages, 0, `${label} contains a broken image`)
+  assert.equal(state.unsizedImages, 0, `${label} contains an unsized image`)
+  assert.deepEqual(state.smallTargets, [], `${label} contains undersized mobile targets: ${JSON.stringify(state.smallTargets)}`)
 }
 
 await send('Page.enable')
@@ -83,6 +93,8 @@ await send('Network.enable')
 await send('Network.setCacheDisabled', { cacheDisabled: true })
 
 for (const port of [5173, 4173]) {
+  await navigate(`http://127.0.0.1:${port}/`)
+  await send('Runtime.evaluate', { expression: `localStorage.removeItem('fashionxpress.cart.v1'); sessionStorage.removeItem('fashionxpress.demoCheckout.v1'); sessionStorage.removeItem('fashionxpress.demoCollection.v1')` })
   const testedWidths = port === 5173 ? [393, 1440] : widths
   for (const width of testedWidths) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: width < 600 ? 852 : 900, deviceScaleFactor: 1, mobile: width < 600 })
@@ -113,7 +125,7 @@ for (const port of [5173, 4173]) {
 }
 
 await send('Emulation.setDeviceMetricsOverride', { width: 393, height: 852, deviceScaleFactor: 1, mobile: true })
-await send('Runtime.evaluate', { expression: `localStorage.removeItem('fashionxpress.cart.v1')` })
+await send('Runtime.evaluate', { expression: `localStorage.removeItem('fashionxpress.cart.v1'); sessionStorage.removeItem('fashionxpress.demoCheckout.v1'); sessionStorage.removeItem('fashionxpress.demoCollection.v1')` })
 await navigate('http://127.0.0.1:4173/collections/neo-safari')
 await send('Runtime.evaluate', { expression: `document.querySelector('.detail-actions button').focus(); document.querySelector('.detail-actions button').click()` })
 await new Promise((resolve) => setTimeout(resolve, 250))
@@ -122,11 +134,19 @@ assert.deepEqual(cartState, { role: 'dialog', modal: 'true', label: 'cart-title'
 await send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'Tab', code: 'Tab', modifiers: 8 })
 await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', modifiers: 8 })
 let { result: { value: trappedAtEnd } } = await send('Runtime.evaluate', { expression: `document.activeElement?.innerText`, returnByValue: true })
-assert.equal(trappedAtEnd.toLowerCase(), 'explore checkout prototype')
+assert.equal(trappedAtEnd.toLowerCase(), 'proceed to demo checkout')
 await send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'Tab', code: 'Tab' })
 await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab' })
 let { result: { value: trappedAtStart } } = await send('Runtime.evaluate', { expression: `document.activeElement?.getAttribute('aria-label')`, returnByValue: true })
 assert.equal(trappedAtStart, 'Close shopping bag')
+await send('Runtime.evaluate', { expression: `document.querySelector('.remove-item').click()` })
+await new Promise((resolve) => setTimeout(resolve, 80))
+let { result: { value: removedState } } = await send('Runtime.evaluate', { expression: `({ empty: Boolean(document.querySelector('.drawer .empty')), stored: localStorage.getItem('fashionxpress.cart.v1') })`, returnByValue: true })
+assert.deepEqual(removedState, { empty: true, stored: '[]' })
+await send('Runtime.evaluate', { expression: `document.querySelector('.drawer .icon-button').click()` })
+await new Promise((resolve) => setTimeout(resolve, 80))
+await send('Runtime.evaluate', { expression: `document.querySelector('.detail-actions button').click()` })
+await new Promise((resolve) => setTimeout(resolve, 80))
 await send('Runtime.evaluate', { expression: `document.querySelector('[aria-label^="Increase Neo-Safari"]').click()` })
 let { result: { value: quantityAfterIncrease } } = await send('Runtime.evaluate', { expression: `document.querySelector('.quantity-control output').value`, returnByValue: true })
 assert.equal(quantityAfterIncrease, '2')
@@ -140,12 +160,77 @@ await send('Runtime.evaluate', { expression: `document.querySelector('.cart-butt
 let { result: { value: persistedCart } } = await send('Runtime.evaluate', { expression: `({ count: document.querySelector('.quantity-control output')?.value, badge: document.querySelector('.cart-button span')?.innerText })`, returnByValue: true })
 assert.deepEqual(persistedCart, { count: '2', badge: '2' })
 await send('Runtime.evaluate', { expression: `document.querySelector('.drawer-total .button').click()` })
-let { result: { value: checkoutReview } } = await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-prototype h3')?.innerText`, returnByValue: true })
-assert.equal(checkoutReview, 'Review the concept checkout')
-await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-prototype .button').click()` })
-let { result: { value: checkoutComplete } } = await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-prototype p')?.innerText`, returnByValue: true })
-assert.match(checkoutComplete, /No payment was taken\. No order was placed\. No wallet was connected\./)
-await send('Runtime.evaluate', { expression: `document.querySelector('.drawer .icon-button').click(); localStorage.setItem('fashionxpress.cart.v1', '{bad-json')` })
+await new Promise((resolve) => setTimeout(resolve, 150))
+let { result: { value: bagReview } } = await send('Runtime.evaluate', { expression: `({ path: location.pathname, step: new URLSearchParams(location.search).get('step'), heading: document.querySelector('h1')?.innerText, quantity: document.querySelector('.checkout-quantity output')?.value, focused: document.activeElement === document.querySelector('h1') })`, returnByValue: true })
+assert.deepEqual(bagReview, { path: '/checkout', step: 'bag', heading: 'Bag review.', quantity: '2', focused: true })
+await assertMobileState('Checkout bag review')
+
+await navigate('http://127.0.0.1:4173/checkout?step=review')
+let { result: { value: guardedStep } } = await send('Runtime.evaluate', { expression: `({ step: new URLSearchParams(location.search).get('step'), heading: document.querySelector('h1')?.innerText })`, returnByValue: true })
+assert.deepEqual(guardedStep, { step: 'bag', heading: 'Bag review.' })
+
+await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-controls .button:not(.ghost)').click()` })
+await new Promise((resolve) => setTimeout(resolve, 80))
+let { result: { value: ownershipStep } } = await send('Runtime.evaluate', { expression: `({ heading: document.querySelector('h1')?.innerText, focused: document.activeElement === document.querySelector('h1'), fields: document.querySelectorAll('input').length, personalFields: document.querySelectorAll('input[type="text"],input[type="email"],input[type="tel"]').length })`, returnByValue: true })
+assert.deepEqual(ownershipStep, { heading: 'Digital identity.', focused: true, fields: 2, personalFields: 0 })
+await assertMobileState('Checkout ownership step')
+await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-options input[value]')?.click?.() ?? document.querySelector('.checkout-options input').click()` })
+await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-controls .button:not(.ghost)').click()` })
+await new Promise((resolve) => setTimeout(resolve, 80))
+await send('Runtime.evaluate', { expression: `document.querySelectorAll('.checkout-options')[0].querySelectorAll('input')[1].click()` })
+let { result: { value: licenceTotal } } = await send('Runtime.evaluate', { expression: `({ heading: document.querySelector('h1')?.innerText, subtotal: document.querySelectorAll('.checkout-totals dd')[0]?.innerText, adjustment: document.querySelectorAll('.checkout-totals dd')[1]?.innerText, total: document.querySelectorAll('.checkout-totals dd')[2]?.innerText })`, returnByValue: true })
+assert.deepEqual(licenceTotal, { heading: 'Concept licences.', subtotal: '5.0 concept ETH', adjustment: '1.0 concept ETH', total: '6.0 concept ETH' })
+await assertMobileState('Checkout licence step')
+
+await send('Runtime.evaluate', { expression: `history.back()` })
+await new Promise((resolve) => setTimeout(resolve, 100))
+let { result: { value: backHeading } } = await send('Runtime.evaluate', { expression: `document.querySelector('h1')?.innerText`, returnByValue: true })
+assert.equal(backHeading, 'Digital identity.')
+await send('Runtime.evaluate', { expression: `history.forward()` })
+await new Promise((resolve) => setTimeout(resolve, 100))
+let { result: { value: forwardState } } = await send('Runtime.evaluate', { expression: `({ heading: document.querySelector('h1')?.innerText, selected: document.querySelectorAll('.checkout-options')[0].querySelectorAll('input')[1].checked })`, returnByValue: true })
+assert.deepEqual(forwardState, { heading: 'Concept licences.', selected: true })
+
+await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-controls .button:not(.ghost)').click()` })
+await new Promise((resolve) => setTimeout(resolve, 80))
+let { result: { value: paymentState } } = await send('Runtime.evaluate', { expression: `({ heading: document.querySelector('h1')?.innerText, credentialFields: document.querySelectorAll('input').length, disclosure: document.querySelector('.checkout-disclosure')?.innerText })`, returnByValue: true })
+assert.equal(paymentState.heading, 'Payment demo.')
+assert.equal(paymentState.credentialFields, 0)
+assert.match(paymentState.disclosure, /No payment will be taken/)
+assert.match(paymentState.disclosure, /No personal information will be transmitted/)
+await assertMobileState('Checkout payment step')
+await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-controls .button:not(.ghost)').click()` })
+await new Promise((resolve) => setTimeout(resolve, 80))
+let { result: { value: reviewState } } = await send('Runtime.evaluate', { expression: `({ heading: document.querySelector('h1')?.innerText, action: document.querySelector('.checkout-controls .button:not(.ghost)')?.innerText, licences: [...document.querySelectorAll('.checkout-item p')].some((node) => node.innerText.includes('Social and content use')) })`, returnByValue: true })
+assert.deepEqual(reviewState, { heading: 'Final review.', action: 'COMPLETE DEMO CHECKOUT', licences: true })
+await assertMobileState('Checkout final review')
+
+await send('Runtime.evaluate', { expression: `const completeButton = document.querySelector('.checkout-controls .button:not(.ghost)'); completeButton.click(); completeButton.click()` })
+await new Promise((resolve) => setTimeout(resolve, 150))
+let { result: { value: completedState } } = await send('Runtime.evaluate', { expression: `({ path: location.pathname, heading: document.querySelector('h1')?.innerText, receiptCount: JSON.parse(sessionStorage.getItem('fashionxpress.demoCollection.v1') ?? '[]').length, cart: localStorage.getItem('fashionxpress.cart.v1'), message: document.querySelector('.checkout-complete>p')?.innerText })`, returnByValue: true })
+assert.deepEqual(completedState, { path: '/checkout/complete', heading: 'Demo checkout complete.', receiptCount: 1, cart: '[]', message: 'No payment was taken. No real order was created. No digital ownership or licence was transferred.' })
+await assertMobileState('Checkout completion')
+await navigate(null, true)
+let { result: { value: refreshedReceipt } } = await send('Runtime.evaluate', { expression: `document.querySelector('h1')?.innerText`, returnByValue: true })
+assert.equal(refreshedReceipt, 'Demo checkout complete.')
+await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-controls .button').click()` })
+await new Promise((resolve) => setTimeout(resolve, 100))
+let { result: { value: vaultState } } = await send('Runtime.evaluate', { expression: `({ path: location.pathname, cards: document.querySelectorAll('.vault-group .checkout-item').length, productLink: document.querySelector('.vault-group .checkout-item a')?.getAttribute('href'), onlineClaim: document.querySelector('.demo-vault>p')?.innerText })`, returnByValue: true })
+assert.equal(vaultState.path, '/demo-collection')
+assert.equal(vaultState.cards, 1)
+assert.equal(vaultState.productLink, '/collections/neo-safari')
+assert.match(vaultState.onlineClaim, /not owned, minted, licensed, or stored online/i)
+await assertMobileState('Demo Collection')
+await send('Runtime.evaluate', { expression: `window.confirm = () => true; document.querySelector('.demo-vault .button.ghost').click()` })
+let { result: { value: resetState } } = await send('Runtime.evaluate', { expression: `({ empty: Boolean(document.querySelector('.checkout-empty')), stored: sessionStorage.getItem('fashionxpress.demoCollection.v1') })`, returnByValue: true })
+assert.deepEqual(resetState, { empty: true, stored: null })
+
+await navigate('http://127.0.0.1:4173/checkout/complete')
+await new Promise((resolve) => setTimeout(resolve, 80))
+let { result: { value: incompleteReceiptRecovery } } = await send('Runtime.evaluate', { expression: `({ path: location.pathname, step: new URLSearchParams(location.search).get('step'), heading: document.querySelector('h1')?.innerText })`, returnByValue: true })
+assert.deepEqual(incompleteReceiptRecovery, { path: '/checkout', step: 'bag', heading: 'Bag review.' })
+
+await send('Runtime.evaluate', { expression: `localStorage.setItem('fashionxpress.cart.v1', '{bad-json')` })
 await navigate(null, true)
 await send('Runtime.evaluate', { expression: `document.querySelector('.cart-button').click()` })
 let { result: { value: recoveredCart } } = await send('Runtime.evaluate', { expression: `({ empty: Boolean(document.querySelector('.drawer .empty')), stored: localStorage.getItem('fashionxpress.cart.v1') })`, returnByValue: true })
@@ -229,8 +314,25 @@ await send('Runtime.evaluate', { expression: `document.querySelector('.newslette
 let { result: { value: newsletterCleared } } = await send('Runtime.evaluate', { expression: `({ value: document.querySelector('#newsletter-email')?.value, local: JSON.stringify(localStorage), session: JSON.stringify(sessionStorage), cookie: document.cookie })`, returnByValue: true })
 assert.equal(newsletterCleared.value, '')
 assert.doesNotMatch(JSON.stringify(newsletterCleared), /newsletter@example\.test/)
+
+await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false })
+await navigate('http://127.0.0.1:4173/collections/quantum-lace')
+await send('Runtime.evaluate', { expression: `localStorage.removeItem('fashionxpress.cart.v1'); sessionStorage.removeItem('fashionxpress.demoCheckout.v1'); sessionStorage.removeItem('fashionxpress.demoCollection.v1'); document.querySelector('.detail-actions button').click()` })
+await new Promise((resolve) => setTimeout(resolve, 100))
+await send('Runtime.evaluate', { expression: `document.querySelector('.drawer-total .button').click()` })
+for (let stepIndex = 0; stepIndex < 4; stepIndex += 1) {
+  await new Promise((resolve) => setTimeout(resolve, 80))
+  await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-controls .button:not(.ghost)').click()` })
+}
+await new Promise((resolve) => setTimeout(resolve, 80))
+await send('Runtime.evaluate', { expression: `document.querySelector('.checkout-controls .button:not(.ghost)').click()` })
+await new Promise((resolve) => setTimeout(resolve, 100))
+let { result: { value: desktopCheckout } } = await send('Runtime.evaluate', { expression: `({ path: location.pathname, heading: document.querySelector('h1')?.innerText, overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth, brokenImages: [...document.images].filter((image) => image.complete && image.naturalWidth === 0).length, receiptCount: JSON.parse(sessionStorage.getItem('fashionxpress.demoCollection.v1') ?? '[]').length })`, returnByValue: true })
+assert.deepEqual(desktopCheckout, { path: '/checkout/complete', heading: 'Demo checkout complete.', overflow: false, brokenImages: 0, receiptCount: 1 })
+
 assert.deepEqual(apiRequests, [], `Demo Mode made API requests: ${apiRequests.join(', ')}`)
 assert.deepEqual(supabaseRequests, [], `Demo Mode made Supabase requests: ${supabaseRequests.join(', ')}`)
+assert.deepEqual(paymentRequests, [], `Demo checkout contacted a payment provider: ${paymentRequests.join(', ')}`)
 
 assert.deepEqual(browserErrors, [], `Browser console errors: ${JSON.stringify(browserErrors)}`)
 

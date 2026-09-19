@@ -8,6 +8,9 @@ const DEFAULT_META = {
 const ROUTE_META = {
   '/': DEFAULT_META,
   '/collections': { title: 'Genesis Collection | FashionXpress', description: 'Explore limited-edition digital garments from the FashionXpress Genesis collection.' },
+  '/checkout': { title: 'Demo Checkout | FashionXpress', description: 'Explore a local, non-transactional digital-fashion checkout demonstration. No payment or ownership transfer occurs.' },
+  '/checkout/complete': { title: 'Demo Checkout Complete | FashionXpress', description: 'Review a local demo checkout receipt; no real order, payment, ownership, or licence was created.' },
+  '/demo-collection': { title: 'Demo Collection | FashionXpress', description: 'View local portfolio demo pieces that are not owned, minted, licensed, or stored online.' },
   '/ar-tryon': { title: 'Camera Preview | FashionXpress', description: 'Preview the experimental FashionXpress camera atelier and explore digital looks.' },
   '/community': { title: 'Creator Community | FashionXpress', description: 'Join conversations with digital fashion designers, collectors, and creative technologists.' },
   '/auth': { title: 'Community Sign-In | FashionXpress', description: 'Enter the portfolio demo or sign in with a six-digit email code in configured Live Mode.' },
