@@ -10,7 +10,7 @@ const ROUTE_META = {
   '/collections': { title: 'Genesis Collection | FashionXpress', description: 'Explore limited-edition digital garments from the FashionXpress Genesis collection.' },
   '/checkout': { title: 'Demo Checkout | FashionXpress', description: 'Explore a local, non-transactional digital-fashion checkout demonstration. No payment or ownership transfer occurs.' },
   '/checkout/complete': { title: 'Demo Checkout Complete | FashionXpress', description: 'Review a local demo checkout receipt; no real order, payment, ownership, or licence was created.' },
-  '/demo-collection': { title: 'Demo Collection | FashionXpress', description: 'View local portfolio demo pieces that are not owned, minted, licensed, or stored online.' },
+  '/demo-collection': { title: 'Demo Vault | FashionXpress', description: 'View local checkout concepts and mint simulations that are not owned, minted, licensed, published, or stored online.' },
   '/ar-tryon': { title: 'Camera Preview | FashionXpress', description: 'Preview the experimental FashionXpress camera atelier and explore digital looks.' },
   '/community': { title: 'Creator Community | FashionXpress', description: 'Join conversations with digital fashion designers, collectors, and creative technologists.' },
   '/auth': { title: 'Community Sign-In | FashionXpress', description: 'Enter the portfolio demo or sign in with a six-digit email code in configured Live Mode.' },
@@ -49,6 +49,15 @@ export function getRouteMeta(pathname) {
     return {
       title: `${product?.name ?? 'Mint'} Prototype | FashionXpress`,
       description: 'Review the non-transactional FashionXpress mint interface prototype.',
+    }
+  }
+
+  const mintCompleteMatch = normalizedPath.match(/^\/mint\/([^/]+)\/complete$/)
+  if (mintCompleteMatch) {
+    const product = productById[mintCompleteMatch[1]]
+    return {
+      title: `${product?.name ?? 'Mint'} Demo Complete | FashionXpress`,
+      description: 'Review a local mint simulation record. No wallet, token, smart contract, or blockchain transaction exists.',
     }
   }
 

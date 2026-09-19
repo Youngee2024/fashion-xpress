@@ -10,16 +10,17 @@ import { productById } from './data/products'
 import { About } from './pages/About'
 import { ARTryOn } from './pages/ARTryOn'
 import { Collections } from './pages/Collections'
-import { Checkout, CheckoutComplete, DemoCollection } from './pages/Checkout'
+import { Checkout, CheckoutComplete } from './pages/Checkout'
 import { Community } from './pages/Community'
 import { Discussion } from './pages/Discussion'
+import { DemoVault } from './pages/DemoVault'
 import { AuthPage, RequireAuth, VerifyOtpPage } from './pages/AuthPage'
 import { ProfileForm, ProfilePage } from './pages/Profile'
 import { Contact } from './pages/Contact'
 import { GetStarted } from './pages/GetStarted'
 import { Home } from './pages/Home'
 import { AccessibilityStatement, CommunityGuidelines, Licensing, Privacy, RefundPolicy, Terms } from './pages/InformationPages'
-import { Mint } from './pages/Mint'
+import { Mint, MintComplete } from './pages/Mint'
 import { NotFound } from './pages/NotFound'
 import { NewsletterConfirm, NewsletterUnsubscribe } from './pages/NewsletterAction'
 import { ProductDetail } from './pages/ProductDetail'
@@ -63,7 +64,7 @@ export default function App() {
         <Route path="/collections/:id" element={<ProductDetail onAdd={add} />} />
         <Route path="/checkout" element={<Checkout cart={cart} onQuantityChange={changeQuantity} onRemove={removeFromCart} onCompleted={completeDemoItems} />} />
         <Route path="/checkout/complete" element={<CheckoutComplete onRestart={restartDemoItems} />} />
-        <Route path="/demo-collection" element={<DemoCollection />} />
+        <Route path="/demo-collection" element={<DemoVault />} />
         <Route path="/ar-tryon" element={<ARTryOn />} />
         <Route path="/community" element={<Community />} />
         <Route path="/community/:id" element={<Discussion />} />
@@ -76,6 +77,7 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/get-started" element={<GetStarted />} />
         <Route path="/mint/:id" element={<Mint />} />
+        <Route path="/mint/:id/complete" element={<MintComplete />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/community-guidelines" element={<CommunityGuidelines />} />
         <Route path="/terms" element={<Terms />} />

@@ -18,6 +18,8 @@ Phase 4 adds passwordless Community accounts and RLS-protected publishing in Liv
 
 Phase 5 adds a complete, demo-only checkout journey: bag review, fictional digital identity, concept licence selection, neutral payment demonstration, final review, local receipt, and a session-only Demo Collection. It never renders payment credential fields, contacts a payment provider, creates an order, or transfers ownership. Product quantities remain in the namespaced persistent bag until completion; completed pieces then move into a non-sensitive `sessionStorage` demonstration record that disappears when the browser session ends or the visitor resets it.
 
+Phase 6 adds a local Demo Mint Studio and unifies checkout concepts and mint simulations in one session-only Demo Vault. Its fixed Demo Wallet, fictional networks, deterministic demo-unit calculations, metadata preview, progress sequence, asset IDs, and transaction references are interface records only. The app never accesses a wallet provider, sends an RPC request, executes a contract, uploads metadata, or creates a token.
+
 See [Phase 3 workflow setup](docs/phase-3-workflows.md) for database migration, email/DNS, environment, local development, Vercel deployment, testing, retention, and credential-rotation instructions.
 
 ---
