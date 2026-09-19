@@ -1,8 +1,8 @@
 import { productById } from './products.js'
 
 const DEFAULT_META = {
-  title: 'FashionXpress — Digital Fashion, Reimagined',
-  description: 'FashionXpress brings African digital fashion, limited-edition wearables, and creator culture to a global audience.',
+  title: 'FashionXpress — Digital Fashion, Made Tangible',
+  description: 'Explore African digital fashion through accessible local checkout, minting, Community and Virtual Try-On prototypes.',
 }
 
 const ROUTE_META = {
