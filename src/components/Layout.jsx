@@ -9,7 +9,7 @@ import { Icon } from './Icons'
 import { FieldError } from './PrototypeUI'
 import { ConsentField, Honeypot, PortfolioDemoIndicator, ServiceStatus } from './WorkflowUI'
 
-const links = [['/', 'Home'], ['/collections', 'Collections'], ['/ar-tryon', 'AR concept'], ['/community', 'Community'], ['/about', 'About']]
+const links = [['/', 'Home'], ['/collections', 'Collections'], ['/ar-tryon', 'Virtual try-on'], ['/community', 'Community'], ['/about', 'About']]
 
 export function Header({ cartCount, onCartOpen }) {
   const auth = useAuth()
@@ -26,7 +26,7 @@ export function Header({ cartCount, onCartOpen }) {
 }
 
 export function Footer() {
-  return <footer><div><Link className="brand" to="/"><span>FX</span> FashionXpress</Link><p>Where culture, code, and couture converge—in a portfolio prototype.</p></div><div><h4>Explore</h4><Link to="/collections">Collections</Link><Link to="/ar-tryon">AR concept</Link><Link to="/community">Community</Link></div><div><h4>Company</h4><Link to="/about">About us</Link><Link to="/contact">Contact</Link><Link to="/get-started">Creator atelier</Link></div><div><h4>Information</h4><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link><Link to="/community-guidelines">Community guidelines</Link><Link to="/licensing">Licensing</Link><Link to="/refund-policy">Purchase status</Link><Link to="/accessibility">Accessibility</Link></div><div className="footer-bottom"><span>© 2026 FashionXpress · Portfolio concept</span><span>Lagos · London · Everywhere</span></div></footer>
+  return <footer><div><Link className="brand" to="/"><span>FX</span> FashionXpress</Link><p>Where culture, code, and couture converge—in a portfolio prototype.</p></div><div><h4>Explore</h4><Link to="/collections">Collections</Link><Link to="/ar-tryon">Virtual try-on</Link><Link to="/community">Community</Link></div><div><h4>Company</h4><Link to="/about">About us</Link><Link to="/contact">Contact</Link><Link to="/get-started">Creator atelier</Link></div><div><h4>Information</h4><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link><Link to="/community-guidelines">Community guidelines</Link><Link to="/licensing">Licensing</Link><Link to="/refund-policy">Purchase status</Link><Link to="/accessibility">Accessibility</Link></div><div className="footer-bottom"><span>© 2026 FashionXpress · Portfolio concept</span><span>Lagos · London · Everywhere</span></div></footer>
 }
 
 export function Layout({ children, cartCount, onCartOpen }) {

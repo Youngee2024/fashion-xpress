@@ -11,7 +11,7 @@ const ROUTE_META = {
   '/checkout': { title: 'Demo Checkout | FashionXpress', description: 'Explore a local, non-transactional digital-fashion checkout demonstration. No payment or ownership transfer occurs.' },
   '/checkout/complete': { title: 'Demo Checkout Complete | FashionXpress', description: 'Review a local demo checkout receipt; no real order, payment, ownership, or licence was created.' },
   '/demo-collection': { title: 'Demo Vault | FashionXpress', description: 'View local checkout concepts and mint simulations that are not owned, minted, licensed, published, or stored online.' },
-  '/ar-tryon': { title: 'Camera Preview | FashionXpress', description: 'Preview the experimental FashionXpress camera atelier and explore digital looks.' },
+  '/ar-tryon': { title: 'Virtual Try-On Prototype | FashionXpress', description: 'Create an on-device manual garment overlay using a camera or local photo. Nothing is uploaded or body-tracked.' },
   '/community': { title: 'Creator Community | FashionXpress', description: 'Join conversations with digital fashion designers, collectors, and creative technologists.' },
   '/auth': { title: 'Community Sign-In | FashionXpress', description: 'Enter the portfolio demo or sign in with a six-digit email code in configured Live Mode.' },
   '/auth/verify': { title: 'Verify Email Code | FashionXpress', description: 'Verify your six-digit FashionXpress Community email code securely.' },

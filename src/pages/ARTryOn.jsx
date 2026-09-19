@@ -1,89 +1,202 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Icon } from '../components/Icons'
-import { PrototypeNotice } from '../components/PrototypeUI'
 import { SafeImage } from '../components/SafeImage'
-import { products } from '../data/products'
+import { DEFAULT_OVERLAY, adjustOverlayFromKey, cameraErrorState, composeTryOn, moveOverlay, normalizeOverlay, requestCamera, stopMediaStream, validatePhotoFile } from '../data/tryOn'
+import { productById, products } from '../data/products'
 
 const stateMessages = {
-  idle: 'Camera access begins only when you choose to activate it.',
+  idle: 'Choose the camera or a local photo. Nothing starts automatically.',
   requesting: 'Waiting for browser camera permission…',
-  active: 'Camera active. Reference garments are not fitted or composited.',
-  captured: 'Plain camera frame captured locally. Nothing was uploaded.',
-  denied: 'Camera permission was denied. Update browser permissions, then retry.',
-  unsupported: 'This browser does not provide the required camera API.',
-  error: 'The camera could not start. Check that another app is not using it, then retry.',
+  active: 'Camera active. The red indicator remains visible while the stream is running.',
+  denied: 'Camera permission was denied. Retry after updating browser permissions, or choose a local photo.',
+  unavailable: 'No suitable camera is available. Choose a local photo instead.',
+  unsupported: 'This browser does not provide the required camera API. Choose a local photo instead.',
+  error: 'The camera could not start. Check whether another app is using it, then retry or choose a photo.',
 }
 
 export function ARTryOn() {
+  const [params] = useSearchParams()
+  const requestedProduct = params.get('product')
+  const initialProduct = productById[requestedProduct] ?? products[0]
   const videoRef = useRef(null)
+  const photoRef = useRef(null)
+  const garmentRef = useRef(null)
   const canvasRef = useRef(null)
+  const stageRef = useRef(null)
   const streamRef = useRef(null)
+  const photoUrlRef = useRef('')
+  const captureUrlRef = useRef('')
+  const requestRef = useRef(0)
+  const dragRef = useRef(null)
   const [cameraState, setCameraState] = useState('idle')
-  const [selected, setSelected] = useState(products[2])
-  const [capture, setCapture] = useState('')
+  const [sourceKind, setSourceKind] = useState('none')
+  const [facingMode, setFacingMode] = useState('user')
+  const [canSwitchCamera, setCanSwitchCamera] = useState(false)
+  const [selected, setSelected] = useState(initialProduct)
+  const [photoUrl, setPhotoUrl] = useState('')
+  const [captureUrl, setCaptureUrl] = useState('')
+  const [captureSource, setCaptureSource] = useState('none')
+  const [overlay, setOverlay] = useState(DEFAULT_OVERLAY)
+  const [message, setMessage] = useState(requestedProduct && !productById[requestedProduct] ? 'Unknown garment recovered to the first trusted catalogue piece.' : stateMessages.idle)
+  const [busy, setBusy] = useState(false)
+
+  function revokePhoto() {
+    if (photoUrlRef.current) URL.revokeObjectURL(photoUrlRef.current)
+    photoUrlRef.current = ''
+    setPhotoUrl('')
+  }
+
+  function revokeCapture() {
+    if (captureUrlRef.current) URL.revokeObjectURL(captureUrlRef.current)
+    captureUrlRef.current = ''
+    setCaptureUrl('')
+  }
+
+  function stopCamera(nextState = 'idle') {
+    requestRef.current += 1
+    stopMediaStream(streamRef.current)
+    streamRef.current = null
+    if (videoRef.current) videoRef.current.srcObject = null
+    setCameraState(nextState)
+    if (sourceKind === 'camera') setSourceKind('none')
+  }
 
   useEffect(() => {
     if (cameraState === 'active' && videoRef.current && streamRef.current) videoRef.current.srcObject = streamRef.current
   }, [cameraState])
 
-  useEffect(() => () => streamRef.current?.getTracks().forEach((track) => track.stop()), [])
+  useEffect(() => () => {
+    requestRef.current += 1
+    stopMediaStream(streamRef.current)
+    if (photoUrlRef.current) URL.revokeObjectURL(photoUrlRef.current)
+    if (captureUrlRef.current) URL.revokeObjectURL(captureUrlRef.current)
+  }, [])
 
-  async function startCamera() {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      setCameraState('unsupported')
-      return
-    }
-    setCameraState('requesting')
-    setCapture('')
+  async function startCamera(nextFacing = facingMode) {
+    revokeCapture()
+    revokePhoto()
+    stopCamera('requesting')
+    setSourceKind('none')
+    setMessage(stateMessages.requesting)
+    const requestId = ++requestRef.current
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false })
+      const stream = await requestCamera(navigator.mediaDevices, nextFacing)
+      if (requestId !== requestRef.current) { stopMediaStream(stream); return }
       streamRef.current = stream
+      setFacingMode(nextFacing)
+      setSourceKind('camera')
       setCameraState('active')
+      setMessage(stateMessages.active)
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices?.()
+        setCanSwitchCamera(Array.isArray(devices) && devices.filter((device) => device.kind === 'videoinput').length > 1)
+      } catch { setCanSwitchCamera(false) }
     } catch (error) {
-      setCameraState(error?.name === 'NotAllowedError' ? 'denied' : 'error')
+      if (requestId !== requestRef.current) return
+      const state = error?.name === 'UnsupportedError' ? 'unsupported' : cameraErrorState(error)
+      setCameraState(state)
+      setSourceKind('none')
+      setMessage(stateMessages[state])
     }
   }
 
-  function stopCamera() {
-    streamRef.current?.getTracks().forEach((track) => track.stop())
-    streamRef.current = null
-    if (videoRef.current) videoRef.current.srcObject = null
-    setCameraState('idle')
+  function choosePhoto(event) {
+    const file = event.target.files?.[0]
+    const error = validatePhotoFile(file)
+    event.target.value = ''
+    if (error) { setMessage(error); return }
+    stopCamera('idle')
+    revokeCapture()
+    revokePhoto()
+    const url = URL.createObjectURL(file)
+    photoUrlRef.current = url
+    setPhotoUrl(url)
+    setSourceKind('photo')
+    setMessage('Local photo ready. It remains in browser memory only and is not uploaded.')
   }
 
-  function captureFrame() {
-    const video = videoRef.current
-    const canvas = canvasRef.current
-    if (!video?.videoWidth || !canvas) {
-      streamRef.current?.getTracks().forEach((track) => track.stop())
-      streamRef.current = null
-      setCameraState('error')
-      return
-    }
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    const context = canvas.getContext('2d')
-    if (!context) {
-      streamRef.current?.getTracks().forEach((track) => track.stop())
-      streamRef.current = null
-      setCameraState('error')
-      return
-    }
-    context.translate(canvas.width, 0)
-    context.scale(-1, 1)
-    context.drawImage(video, 0, 0, canvas.width, canvas.height)
-    setCapture(canvas.toDataURL('image/jpeg', .9))
-    streamRef.current?.getTracks().forEach((track) => track.stop())
-    streamRef.current = null
-    setCameraState('captured')
+  function updateOverlay(field, value) {
+    setOverlay((current) => normalizeOverlay({ ...current, [field]: Number(value) }))
   }
 
-  const canRetry = ['denied', 'error'].includes(cameraState)
-  const active = cameraState === 'active'
+  function beginDrag(event) {
+    if (!selected || !overlay.visible) return
+    event.currentTarget.setPointerCapture(event.pointerId)
+    dragRef.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, overlay }
+  }
 
-  return <>
-    <section className="ar-heading page-shell"><span className="eyebrow">Camera preview prototype</span><h1>AR Try-on<br/><em>concept.</em></h1><p>Test camera framing, choose a visual reference, and capture a plain local frame. No garment tracking or fitting occurs.</p><a className="button ar-jump" href="#camera-concept">Open camera concept <Icon name="camera" size={17}/></a></section>
-    <section id="camera-concept" className="page-shell ar-layout"><div className={`camera-stage ${active ? 'is-live' : ''}`}>{active ? <video ref={videoRef} autoPlay playsInline muted/> : capture ? <img className="camera-poster" src={capture} alt="Locally captured camera frame"/> : <SafeImage priority className="camera-poster" src="/images/camera.jpg" alt="Camera preview concept" width="1200" height="900"/>}<div className="camera-shade"/><div className="camera-chrome"><span className={active ? 'live' : ''}><i/>{active ? 'Live plain camera' : capture ? 'Local capture' : 'Camera idle'}</span><span>Front camera · Mirrored</span></div><div className="frame-guide" aria-hidden="true"><i/><i/><i/><i/></div>{!active && !capture && <div className="camera-empty"><span>AR</span><h2>Enter the frame.</h2><p>This activates a plain camera preview only. Your selected look remains a separate reference.</p><button className="button" onClick={startCamera} disabled={cameraState === 'requesting'} aria-busy={cameraState === 'requesting'}><Icon name="camera" size={17}/>{cameraState === 'requesting' ? 'Requesting permission…' : canRetry ? 'Retry camera' : 'Activate camera'}</button></div>}{active && <><div className="ar-overlay"><SafeImage src={selected.image} alt="" width="112" height="140"/><span><small>Separate reference</small>{selected.name}</span></div><div className="camera-controls"><button className="capture" onClick={captureFrame} aria-label="Capture plain camera frame locally"><Icon name="camera"/></button><button onClick={stopCamera}>End preview</button></div></>}{capture && <div className="camera-controls capture-review"><button className="button" onClick={() => { setCapture(''); setCameraState('idle') }}>Retake</button><a className="button ghost" href={capture} download="fashionxpress-camera-preview.jpg">Download locally</a></div>}<canvas ref={canvasRef} hidden/></div><div className="outfit-panel"><div><span className="eyebrow">Visual reference rail</span><h2>Choose a reference</h2></div><PrototypeNotice compact>The selected piece is displayed beside the camera only. It is never placed on your body.</PrototypeNotice><div className="outfit-list" role="group" aria-label="Select a visual reference look">{products.slice(0, 4).map((product) => <button key={product.id} className={selected.id === product.id ? 'selected' : ''} onClick={() => setSelected(product)} aria-pressed={selected.id === product.id}><SafeImage src={product.image} alt="" width="108" height="132"/><span><strong>{product.name}</strong><small>{product.rarity}</small></span><i aria-hidden="true">{selected.id === product.id ? '✓' : '→'}</i></button>)}</div><p className={`ar-message ${['denied', 'unsupported', 'error'].includes(cameraState) ? 'error' : ''}`} role={['denied', 'unsupported', 'error'].includes(cameraState) ? 'alert' : 'status'} aria-live="polite">{stateMessages[cameraState]}</p><small className="privacy">Camera frames stay on your device. A download occurs only when you choose it.</small></div></section>
-    <section className="page-shell ar-production"><span className="eyebrow">Production vision</span><h2>What real AR would add.</h2><div><article><b>01</b><h3>Body-aware placement</h3><p>Consent-led pose estimation and garment anchoring rather than a decorative overlay.</p></article><article><b>02</b><h3>Material response</h3><p>Lighting and movement behavior validated against each garment’s authored design.</p></article><article><b>03</b><h3>Clear processing controls</h3><p>Transparent on-device or server-processing choices, retention rules, and deletion controls.</p></article></div></section>
-  </>
+  function dragOverlay(event) {
+    if (!dragRef.current || dragRef.current.pointerId !== event.pointerId || !stageRef.current) return
+    const bounds = stageRef.current.getBoundingClientRect()
+    const start = dragRef.current
+    setOverlay(moveOverlay(start.overlay, (event.clientX - start.x) / bounds.width * 100, (event.clientY - start.y) / bounds.height * 100))
+  }
+
+  function endDrag(event) {
+    if (dragRef.current?.pointerId === event.pointerId) dragRef.current = null
+  }
+
+  function handleOverlayKey(event) {
+    if (!event.key.startsWith('Arrow')) return
+    event.preventDefault()
+    setOverlay((current) => adjustOverlayFromKey(current, event.key, event.shiftKey))
+    setMessage(`Garment position adjusted ${event.key.replace('Arrow', '').toLowerCase()}.`)
+  }
+
+  async function captureComposition() {
+    const source = sourceKind === 'camera' ? videoRef.current : photoRef.current
+    if (!selected || !source) { setMessage('Choose a garment and camera or photo source before capturing.'); return }
+    setBusy(true)
+    revokeCapture()
+    try {
+      const stageBounds = stageRef.current?.getBoundingClientRect()
+      const blob = await composeTryOn({ canvas: canvasRef.current, source, garment: garmentRef.current, overlay, mirrored: sourceKind === 'camera' && facingMode === 'user', previewWidth: stageBounds?.width, previewHeight: stageBounds?.height })
+      const url = URL.createObjectURL(blob)
+      captureUrlRef.current = url
+      setCaptureUrl(url)
+      setCaptureSource(sourceKind)
+      if (sourceKind === 'camera') stopCamera('idle')
+      setSourceKind('capture')
+      setMessage('Local composition captured. Nothing was uploaded or persisted.')
+    } catch (error) {
+      setMessage(error.message || 'The local composition could not be captured.')
+    } finally { setBusy(false) }
+  }
+
+  function retake() {
+    revokeCapture()
+    if (captureSource === 'camera') startCamera(facingMode)
+    else if (photoUrlRef.current) { setSourceKind('photo'); setMessage('Local photo restored for another composition.') }
+    else { setSourceKind('none'); setMessage(stateMessages.idle) }
+  }
+
+  function resetExperience() {
+    stopCamera('idle')
+    revokePhoto()
+    revokeCapture()
+    setSourceKind('none')
+    setCaptureSource('none')
+    setSelected(products[0])
+    setOverlay(DEFAULT_OVERLAY)
+    setCanSwitchCamera(false)
+    setFacingMode('user')
+    setMessage('Virtual Try-On Prototype reset. No local image remains in memory.')
+  }
+
+  const hasSource = sourceKind === 'camera' || sourceKind === 'photo'
+  const cameraProblem = ['denied', 'unavailable', 'unsupported', 'error'].includes(cameraState)
+  const overlayStyle = { left: `${overlay.x}%`, top: `${overlay.y}%`, opacity: overlay.opacity / 100, transform: `translate(-50%, -50%) rotate(${overlay.rotation}deg) scale(${overlay.scale / 100})` }
+
+  return <section className="page-shell tryon-page"><header className="tryon-heading"><span className="eyebrow">Virtual Try-On Prototype</span><h1>Style it locally.</h1><p>Position a garment manually over a camera preview or local photo. Automatic body tracking is not active, and this creative preview cannot assess fit or sizing.</p></header><p className="tryon-status" role={cameraProblem ? 'alert' : 'status'} aria-live="polite">{message}</p>
+    <div className="tryon-layout"><div><div ref={stageRef} className={`tryon-stage ${cameraState === 'active' ? 'is-live' : ''}`}>{sourceKind === 'camera' && <video ref={videoRef} autoPlay playsInline muted className={facingMode === 'user' ? 'mirrored' : ''}/>} {sourceKind === 'photo' && <img ref={photoRef} className="tryon-source" src={photoUrl} alt="Selected local preview"/>}{sourceKind === 'capture' && <img className="tryon-source" src={captureUrl} alt="Captured local garment composition"/>}{sourceKind === 'none' && <SafeImage priority className="tryon-source tryon-placeholder" src="/images/camera.jpg" alt="Virtual try-on prototype preview" width="1200" height="900"/>}
+        {hasSource && selected && overlay.visible && <div className="tryon-garment" style={overlayStyle} role="application" tabIndex="0" aria-label={`${selected.name} manual overlay. Drag, or use arrow keys to reposition. Shift plus arrow moves farther.`} onPointerDown={beginDrag} onPointerMove={dragOverlay} onPointerUp={endDrag} onPointerCancel={endDrag} onKeyDown={handleOverlayKey}><img ref={garmentRef} src={selected.image} alt="" width="360" height="480" draggable="false"/></div>}
+        <div className="camera-chrome"><span className={cameraState === 'active' ? 'live' : ''}><i/>{cameraState === 'active' ? 'Camera active' : sourceKind === 'photo' ? 'Local photo' : sourceKind === 'capture' ? 'Local capture' : 'Preview idle'}</span><span>{cameraState === 'active' && facingMode === 'user' ? 'Front · Mirrored' : 'On-device only'}</span></div>
+        {sourceKind === 'none' && <div className="tryon-source-actions"><h2>Choose your starting point.</h2><p>Camera permission is requested only after activation. Photos remain in memory and are never uploaded.</p><div><button className="button" type="button" onClick={() => startCamera('user')} disabled={cameraState === 'requesting'} aria-busy={cameraState === 'requesting'}><Icon name="camera" size={17}/>{cameraState === 'requesting' ? 'Requesting permission…' : cameraProblem ? 'Retry camera' : 'Use camera'}</button><label className="button ghost">Choose local photo<input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto}/></label></div></div>}
+        {cameraState === 'active' && <div className="tryon-camera-actions"><button type="button" onClick={() => stopCamera('idle')}>Stop camera</button>{canSwitchCamera && <button type="button" onClick={() => startCamera(facingMode === 'user' ? 'environment' : 'user')}>Use {facingMode === 'user' ? 'rear' : 'front'} camera</button>}</div>}
+        {hasSource && <button className="tryon-capture" type="button" onClick={captureComposition} disabled={busy || !selected} aria-label="Capture combined image locally"><Icon name="camera" size={22}/><span>{busy ? 'Capturing…' : 'Capture locally'}</span></button>}
+        {sourceKind === 'capture' && <div className="tryon-result-actions"><button className="button" type="button" onClick={retake}>Retake</button><a className="button ghost" href={captureUrl} download={`fashionxpress-${selected?.id ?? 'style'}-preview.jpg`}>Download locally</a></div>}
+      </div><canvas ref={canvasRef} hidden/><p className="tryon-privacy">No image leaves this browser. No biometric data, face or body measurement, background recording, upload, or online storage occurs.</p></div>
+      <aside className="tryon-panel"><div><span className="eyebrow">01 / Garment</span><h2>Choose a piece</h2><div className="tryon-garments" role="group" aria-label="Choose a garment overlay">{products.map((product) => <button type="button" key={product.id} aria-pressed={selected?.id === product.id} className={selected?.id === product.id ? 'selected' : ''} onClick={() => { setSelected(product); setMessage(`${product.name} selected for manual positioning.`) }}><SafeImage src={product.image} alt="" width="92" height="116"/><span>{product.name}</span></button>)}</div></div><div className="tryon-controls"><span className="eyebrow">02 / Manual styling overlay</span><h2>Adjust the layer</h2><label>Size <output>{overlay.scale}%</output><input type="range" min="45" max="180" value={overlay.scale} onChange={(event) => updateOverlay('scale', event.target.value)}/></label><label>Rotation <output>{overlay.rotation}°</output><input type="range" min="-45" max="45" value={overlay.rotation} onChange={(event) => updateOverlay('rotation', event.target.value)}/></label><label>Opacity <output>{overlay.opacity}%</output><input type="range" min="20" max="100" value={overlay.opacity} onChange={(event) => updateOverlay('opacity', event.target.value)}/></label><div className="tryon-control-buttons"><button type="button" onClick={() => setOverlay((current) => ({ ...current, x: 50, y: 48 }))}>Center</button><button type="button" onClick={() => setOverlay(DEFAULT_OVERLAY)}>Reset position</button><button type="button" aria-pressed={overlay.visible} onClick={() => setOverlay((current) => ({ ...current, visible: !current.visible }))}>{overlay.visible ? 'Hide layer' : 'Show layer'}</button><button type="button" onClick={() => setSelected(null)}>Clear garment</button></div></div><div className="tryon-reset"><button className="button ghost" type="button" onClick={resetExperience}>Reset experience</button>{selected && <Link className="text-link" to={`/collections/${selected.id}`}>View product details</Link>}</div></aside></div>
+  </section>
 }
