@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { CartDrawer } from './components/CartDrawer'
 import { Layout } from './components/Layout'
@@ -10,6 +10,7 @@ import { productById } from './data/products'
 import { About } from './pages/About'
 import { ARTryOn } from './pages/ARTryOn'
 import { Collections } from './pages/Collections'
+import { Collectibles } from './pages/Collectibles'
 import { Checkout, CheckoutComplete } from './pages/Checkout'
 import { Community } from './pages/Community'
 import { Discussion } from './pages/Discussion'
@@ -24,6 +25,12 @@ import { Mint, MintComplete } from './pages/Mint'
 import { NotFound } from './pages/NotFound'
 import { NewsletterConfirm, NewsletterUnsubscribe } from './pages/NewsletterAction'
 import { ProductDetail } from './pages/ProductDetail'
+
+function LegacyMintRedirect({ complete = false }) {
+  const { id } = useParams()
+  const { search } = useLocation()
+  return <Navigate to={id ? `/collectibles/${id}${complete ? '/complete' : ''}${search}` : '/collectibles'} replace />
+}
 
 export default function App() {
   const [cart, setCart] = useState(() => readCart())
@@ -80,8 +87,12 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/get-started" element={<GetStarted />} />
-        <Route path="/mint/:id" element={<Mint />} />
-        <Route path="/mint/:id/complete" element={<MintComplete />} />
+        <Route path="/collectibles" element={<Collectibles />} />
+        <Route path="/collectibles/:id" element={<Mint />} />
+        <Route path="/collectibles/:id/complete" element={<MintComplete />} />
+        <Route path="/mint" element={<LegacyMintRedirect />} />
+        <Route path="/mint/:id" element={<LegacyMintRedirect />} />
+        <Route path="/mint/:id/complete" element={<LegacyMintRedirect complete />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/community-guidelines" element={<CommunityGuidelines />} />
         <Route path="/terms" element={<Terms />} />

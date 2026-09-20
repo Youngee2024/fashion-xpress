@@ -4,19 +4,19 @@ Use this copy as a source, then adapt length and tone to the publishing platform
 
 ## One-sentence project description
 
-FashionXpress is an editorial React experience for discovering, trying and discussing African digital fashion through transparent, local-first prototype journeys.
+FashionXpress is an African digital-fashion e-commerce prototype with Naira pricing, licence-based access, Virtual Try-On, creator experiences, Community and an optional Collectibles Lab.
 
 ## 50-word summary
 
-FashionXpress is an editorial digital-fashion portfolio prototype that connects African fashion discovery, local checkout, fictional minting, manual virtual try-on and community participation in one responsive React experience. Clear Demo Mode disclosures distinguish meaningful interaction from real payments, blockchain transactions, body tracking, data submission and online publication throughout the product journey.
+FashionXpress connects African fashion discovery, clear Naira pricing, licence-first checkout, Digital Wardrobe, Virtual Try-On and Community in one responsive React experience. An optional Collectibles Lab preserves blockchain education without making normal shopping crypto-first, while Demo Mode disclosures distinguish interaction from real payments, licensing, body tracking, submission and publication.
 
 ## 100-word summary
 
-FashionXpress transforms a legacy fashion website into a responsive React product with a focused editorial identity. Visitors can browse nine digital-fashion concepts, open rich product stories, manage a persistent bag, complete a local checkout demonstration, explore fictional minting, style garments with an on-device image tool and participate in a memory-only Community. Every simulated outcome explains what did not happen, including payment, order, wallet connection, blockchain activity, body tracking or online publishing. Accessible navigation, guarded state, responsive layouts and fail-closed Live service boundaries turn an ambitious concept into a credible portfolio case study for product design and frontend engineering roles alike.
+FashionXpress transforms a legacy fashion website into a responsive React product with a focused editorial identity. Visitors browse nine digital pieces by release tier, review planned licence allocations, manage a persistent bag, choose digital-use licences, complete a Naira checkout demonstration and build a local Digital Wardrobe. Virtual Try-On, creator and Community journeys extend the experience. A separate Collectibles Lab contains the fictional wallet and blockchain simulation. Every simulated outcome explains what did not happen, while accessible navigation, guarded state and fail-closed Live boundaries create a credible product-design and frontend case study.
 
 ## Full portfolio introduction
 
-FashionXpress explores what a digital fashion house could feel like when editorial storytelling, interaction design and technical honesty receive equal attention. The interface presents African-inspired digital garments through a bold black, cream and acid-lime system, then connects discovery to product detail, a non-transactional checkout, fictional minting, local Virtual Try-On and a Demo Community.
+FashionXpress explores what an African digital-fashion store could feel like when editorial storytelling, interaction design and technical honesty receive equal attention. The interface uses a bold black, cream and acid-lime system to connect discovery with Naira pricing, digital-use licences, Digital Wardrobe, Virtual Try-On, creator experiences and Community. Collectibles Lab remains optional and separate.
 
 The project began as a legacy multi-page site and became a modular React application with shared product data, guarded state and responsive route-level experiences. Its most important design decision is visible throughout: a prototype can feel complete without pretending that unavailable services are real. Payments, blockchain activity, body tracking, form transmission and online publishing are each described precisely at the moment a visitor might otherwise misunderstand them.
 
@@ -43,14 +43,14 @@ FashionXpress uses a shared editorial system and trusted product model to connec
 ## Three key design decisions
 
 1. **Make honesty part of the interaction.** Prototype disclosures sit beside the relevant action and completion state instead of being buried in a disclaimer.
-2. **Use the smallest useful persistence boundary.** The bag persists locally, checkout and mint records last only for the session, and Demo Community content stays in memory.
+2. **Use the smallest useful persistence boundary.** The bag persists locally, Digital Wardrobe and Collectibles Lab use separate session namespaces, and Demo Community content stays in memory.
 3. **Let editorial expression and product clarity share the page.** Oversized typography and fashion imagery lead, while steps, controls and status copy follow a repeatable functional system.
 
 ## Five feature highlights
 
 1. A nine-piece, filterable collection linked to dynamic product-detail routes.
-2. An accessible cart drawer and five-step checkout demonstration with concept licences.
-3. A fictional Demo Wallet, deterministic mint calculations and a unified Demo Vault.
+2. An accessible cart drawer and licence-first Naira checkout demonstration.
+3. A commerce-only Digital Wardrobe plus a separate optional Collectibles Lab with deterministic local simulation.
 4. An on-device Virtual Try-On editor with camera/photo input, manual controls and local download.
 5. A memory-only Demo Community with profiles, discussions, replies, likes and reporting previews.
 
@@ -68,17 +68,17 @@ Prepared Live workflows use protected Vercel Functions, Supabase Auth/Postgres/R
 
 ## Outcome statement
 
-The final project is a cohesive, portfolio-ready product demonstration that supports complete discovery, checkout, mint, try-on and Community journeys while keeping every technical boundary visible. It demonstrates verified design and engineering outcomes; it does not claim customers, revenue, transactions, research metrics or production adoption.
+The final project is a cohesive, portfolio-ready e-commerce demonstration spanning discovery, licence-first checkout, Digital Wardrobe, Try-On and Community, with collectible education clearly secondary. It demonstrates verified design and engineering outcomes; it does not claim customers, revenue, transactions, research metrics or production adoption.
 
 ## Short project-card caption
 
-An editorial digital-fashion experience combining responsive product design, local creative tools and honestly labelled commerce, minting and Community prototypes.
+An editorial African digital-fashion experience combining Naira commerce, licence-based access, local creative tools and an optional Collectibles Lab.
 
 ## Behance project introduction
 
 **FashionXpress - digital fashion, made tangible.**
 
-This case study follows the transformation of a legacy fashion website into a responsive React product shaped around African creative direction. The experience connects editorial discovery, product detail, a local checkout demonstration, fictional minting, manual Virtual Try-On and a Demo Community.
+This case study follows the transformation of a legacy fashion website into a responsive React product shaped around African creative direction. The experience connects editorial discovery, Naira pricing, licence-first checkout, Digital Wardrobe, manual Virtual Try-On and a Demo Community, with Collectibles Lab kept optional.
 
 The visual system is deliberately bold: charcoal surfaces, warm cream typography and acid-lime signals frame full-body fashion imagery. The product behavior is deliberately clear: no payment, blockchain transaction, body tracking, personal submission or online Community publication is hidden behind prototype language.
 
@@ -88,9 +88,9 @@ The result is an end-to-end UI/UX and frontend case study focused on hierarchy, 
 
 I have completed FashionXpress, an end-to-end UI/UX and frontend case study for African digital fashion.
 
-The project turns a legacy multi-page concept into a responsive React experience spanning collection discovery, product detail, an accessible cart, Demo Checkout, a fictional Demo Wallet and Mint Studio, local Virtual Try-On, and a memory-only Community.
+The project turns a legacy multi-page concept into a responsive React experience spanning collection discovery, product detail, an accessible cart, licence-first Naira Demo Checkout, Digital Wardrobe, local Virtual Try-On and a memory-only Community. A separate Collectibles Lab preserves the fictional wallet demonstration without defining the shopping experience.
 
-The most important constraint shaped the whole product: the experience had to feel complete without pretending its simulations were real. Every checkout, mint, form and Community outcome states exactly what did not happen.
+The most important constraint shaped the whole product: the experience had to feel complete without pretending its simulations were real. Every checkout, collectible, form and Community outcome states exactly what did not happen.
 
 Built with React, React Router, Vite and Tailwind CSS, with prepared but inactive Supabase, Resend and Vercel service boundaries.
 
@@ -101,7 +101,7 @@ Case study and source: https://github.com/Youngee2024/fashion-xpress
 
 ## GitHub repository description
 
-Editorial React portfolio prototype for African digital fashion, with accessible local checkout, minting, Community and Virtual Try-On journeys.
+African digital-fashion e-commerce prototype with Naira pricing, licence-based access, Virtual Try-On, Community and an optional Collectibles Lab.
 
 ## Recommended GitHub topics
 
@@ -110,7 +110,7 @@ Editorial React portfolio prototype for African digital fashion, with accessible
 ## Recruiter-friendly resume bullet points
 
 - Designed and developed a 20-plus-route React digital-fashion prototype, consolidating legacy static pages into shared components, trusted data models and resilient SPA navigation.
-- Built accessible local checkout, fictional minting, Virtual Try-On and Community journeys with explicit non-transactional states, guarded persistence and corrupt-state recovery.
+- Built accessible licence-first Naira checkout, Digital Wardrobe, optional Collectibles Lab, Virtual Try-On and Community journeys with guarded persistence and corrupt-state recovery.
 - Implemented responsive behavior from 320px to large desktop, including keyboard interactions, reduced motion, focus-managed dialogs and route-specific metadata.
 - Prepared fail-closed Supabase, Resend and Vercel service boundaries while keeping server credentials outside the frontend and the public portfolio in Demo Mode.
 - Established automated tests, linting, production builds, route refresh checks, console/network monitoring and a final multi-viewport QA process.
@@ -118,7 +118,7 @@ Editorial React portfolio prototype for African digital fashion, with accessible
 ## GitHub profile project-card copy
 
 **FashionXpress**  
-Responsive digital-fashion case study built with React. Explore nine editorial concepts, Demo Checkout, fictional minting, local Virtual Try-On and a memory-only Community - with accessible interactions and transparent prototype boundaries.
+Responsive African digital-fashion case study built with React. Explore nine pieces, licence-first Naira checkout, Digital Wardrobe, local Virtual Try-On, Community and an optional Collectibles Lab—with accessible interactions and transparent prototype boundaries.
 
 ## Suggested social-preview alt text
 

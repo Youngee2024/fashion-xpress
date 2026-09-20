@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 
-const routes = ['/', '/collections', '/collections/neo-safari', '/checkout', '/digital-wardrobe', '/ar-tryon', '/community', '/community/demo-1', '/auth', '/profile/runwayguest', '/community-guidelines', '/about', '/contact', '/get-started', '/mint/neo-safari', '/privacy', '/terms', '/licensing', '/refund-policy', '/accessibility', '/newsletter/confirm', '/newsletter/unsubscribe', '/definitely-missing']
+const routes = ['/', '/collections', '/collections/neo-safari', '/checkout', '/digital-wardrobe', '/ar-tryon', '/community', '/community/demo-1', '/auth', '/profile/runwayguest', '/community-guidelines', '/about', '/contact', '/get-started', '/collectibles/neo-safari', '/privacy', '/terms', '/licensing', '/refund-policy', '/accessibility', '/newsletter/confirm', '/newsletter/unsubscribe', '/definitely-missing']
 const widths = [320, 375, 393, 768, 1024, 1440, 1920]
 const expectedHeadings = ['Wear the', 'Digital pieces.', 'Neo-Safari 2026', 'Bag review.', 'Digital Wardrobe.', 'Style it locally.', 'Ideas look better', 'How do I price', 'Enter the demo community.', 'Runway Guest', 'Make room for ideas.', 'African creativity,', 'Message', 'Bring what', 'Metadata.', 'Privacy, in plain language.', 'Terms for exploring', 'Digital fashion licensing.', 'Purchases are unavailable.', 'Designed for more ways', 'Confirm your place.', 'Leave the list.', 'Off the runway.']
 

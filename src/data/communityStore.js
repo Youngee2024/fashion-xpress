@@ -6,7 +6,7 @@ const demoAuthors = [
 ]
 
 const seed = [
-  { id: 'demo-1', author_id: 'seed-artist', title: 'How do I price a first digital collection?', body: 'I am weighing rarity, craft, and the time behind each piece. What has helped you explain value to collectors?', category: 'Marketplace', created_at: '2026-08-10T12:00:00.000Z' },
+  { id: 'demo-1', author_id: 'seed-artist', title: 'How do I price a first digital collection?', body: 'I am weighing release tiers, craft, and the time behind each piece. What has helped you explain value to digital wearers?', category: 'Marketplace', created_at: '2026-08-10T12:00:00.000Z' },
   { id: 'demo-2', author_id: 'seed-maker', title: 'Materials that move between worlds', body: 'I am exploring how textiles can feel expressive in both physical and digital spaces. What tools have helped your workflow?', category: 'Tools', created_at: '2026-08-11T12:00:00.000Z' },
 ]
 

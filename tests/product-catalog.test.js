@@ -29,9 +29,9 @@ const originalProducts = [
 ]
 
 const newProducts = [
-  { id: 'ancestral-circuit', name: 'Ancestral Circuit', image: '/images/ancestral-circuit.jpg', rarity: 'Rare', stock: 20, currency: 'NGN', priceKobo: 14500000, collectiblePriceEth: 3.8, collectiblePriceUnits: 38, score: 82 },
-  { id: 'lagoon-protocol', name: 'Lagoon Protocol', image: '/images/lagoon-protocol.jpg', rarity: 'Ultra Rare', stock: 5, currency: 'NGN', priceKobo: 19500000, collectiblePriceEth: 6.5, collectiblePriceUnits: 65, score: 94 },
-  { id: 'harmattan-veil', name: 'Harmattan Veil', image: '/images/harmattan-veil.jpg', rarity: 'Limited', stock: 30, currency: 'NGN', priceKobo: 10500000, collectiblePriceEth: 2.9, collectiblePriceUnits: 29, score: 68 },
+  { id: 'ancestral-circuit', name: 'Ancestral Circuit', image: '/images/ancestral-circuit.jpg', releaseTier: 'Signature Release', rarity: 'Rare', stock: 20, currency: 'NGN', priceKobo: 14500000, collectiblePriceEth: 3.8, collectiblePriceUnits: 38, score: 82 },
+  { id: 'lagoon-protocol', name: 'Lagoon Protocol', image: '/images/lagoon-protocol.jpg', releaseTier: 'Atelier Release', rarity: 'Ultra Rare', stock: 5, currency: 'NGN', priceKobo: 19500000, collectiblePriceEth: 6.5, collectiblePriceUnits: 65, score: 94 },
+  { id: 'harmattan-veil', name: 'Harmattan Veil', image: '/images/harmattan-veil.jpg', releaseTier: 'Limited Release', rarity: 'Limited', stock: 30, currency: 'NGN', priceKobo: 10500000, collectiblePriceEth: 2.9, collectiblePriceUnits: 29, score: 68 },
 ]
 
 test('catalogue preserves the original six and appends the three exact new records', () => {
@@ -64,12 +64,12 @@ test('new catalogue images exist at their assigned paths and are JPEG files', as
   }
 })
 
-test('catalogue search, rarity filters and integer-price sorting include new products', () => {
+test('catalogue search, release-tier filters and integer-price sorting include new products', () => {
   assert.deepEqual(selectProducts({ query: 'tidal' }).map(({ id }) => id), ['lagoon-protocol'])
   assert.deepEqual(selectProducts({ query: 'dry-season' }).map(({ id }) => id), ['harmattan-veil'])
-  assert.ok(selectProducts({ filter: 'Rare' }).some(({ id }) => id === 'ancestral-circuit'))
-  assert.ok(selectProducts({ filter: 'Ultra Rare' }).some(({ id }) => id === 'lagoon-protocol'))
-  assert.ok(selectProducts({ filter: 'Limited' }).some(({ id }) => id === 'harmattan-veil'))
+  assert.ok(selectProducts({ filter: 'Signature Release' }).some(({ id }) => id === 'ancestral-circuit'))
+  assert.ok(selectProducts({ filter: 'Atelier Release' }).some(({ id }) => id === 'lagoon-protocol'))
+  assert.ok(selectProducts({ filter: 'Limited Release' }).some(({ id }) => id === 'harmattan-veil'))
   assert.deepEqual(selectProducts().map(({ id }) => id), products.map(({ id }) => id))
   assert.equal(selectProducts({ sort: 'low' })[0].id, 'quantum-lace')
   assert.equal(selectProducts({ sort: 'high' })[0].id, 'lavida-locale')
@@ -101,7 +101,7 @@ test('Ancestral Circuit persists in the cart and completes checkout with integer
   assert.equal(validDemoItems(products.map(({ id }) => ({ id, quantity: 1, licence: 'personal' }))), true)
 })
 
-test('Lagoon Protocol creates trusted mint metadata and an idempotent Demo Vault asset', () => {
+test('Lagoon Protocol creates trusted collectible metadata and an idempotent local asset', () => {
   const metadata = deriveMintMetadata('lagoon-protocol', 'personal')
   assert.equal(metadata.product.image, '/images/lagoon-protocol.jpg')
   assert.equal(metadata.identifier, 'demo:metadata:lagoon-protocol')

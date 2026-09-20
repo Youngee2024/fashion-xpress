@@ -2,18 +2,19 @@ import { productById } from './products.js'
 
 const DEFAULT_META = {
   title: 'FashionXpress — Digital Fashion, Made Tangible',
-  description: 'Explore African digital fashion through Naira demo checkout, digital-use licences, Community and Virtual Try-On, with a separate optional collectible prototype.',
+  description: 'Explore African digital fashion through clear Naira pricing, digital-use licences, Virtual Try-On, creator experiences, Community, and an optional Collectibles Lab.',
 }
 
 const ROUTE_META = {
   '/': DEFAULT_META,
-  '/collections': { title: 'Genesis Collection | FashionXpress', description: 'Explore limited-edition digital garments from the FashionXpress Genesis collection.' },
+  '/collections': { title: 'Digital Fashion Collection | FashionXpress', description: 'Explore nine African digital-fashion pieces with Naira pricing, release tiers, and planned licence allocations.' },
   '/checkout': { title: 'Naira Demo Checkout | FashionXpress', description: 'Choose a digital-use licence and explore a local Naira checkout demonstration. No real payment, order, or licence transfer occurs.' },
   '/checkout/complete': { title: 'Demo Order Confirmation | FashionXpress', description: 'Review a local Naira demo order confirmation; no real order, payment, or digital-use licence was created.' },
   '/digital-wardrobe': { title: 'Digital Wardrobe | FashionXpress', description: 'Review session-only Naira checkout records and their illustrative digital-use licences, separated from legacy collectible simulations.' },
   '/demo-collection': { title: 'Digital Wardrobe | FashionXpress', description: 'Continue to the FashionXpress Digital Wardrobe.' },
+  '/collectibles': { title: 'Collectibles Lab | FashionXpress', description: 'Explore an optional local educational simulation. No wallet, blockchain transaction, token, ownership, or licence transfer exists.' },
   '/ar-tryon': { title: 'Virtual Try-On Prototype | FashionXpress', description: 'Create an on-device manual garment overlay using a camera or local photo. Nothing is uploaded or body-tracked.' },
-  '/community': { title: 'Creator Community | FashionXpress', description: 'Join conversations with digital fashion designers, collectors, and creative technologists.' },
+  '/community': { title: 'Creator Community | FashionXpress', description: 'Join conversations with digital fashion designers, digital wearers, and creative technologists.' },
   '/auth': { title: 'Community Sign-In | FashionXpress', description: 'Enter the portfolio demo or sign in with a six-digit email code in configured Live Mode.' },
   '/auth/verify': { title: 'Verify Email Code | FashionXpress', description: 'Verify your six-digit FashionXpress Community email code securely.' },
   '/profile/setup': { title: 'Set Up Profile | FashionXpress', description: 'Choose a handle and a public FashionXpress Community profile.' },
@@ -40,25 +41,25 @@ export function getRouteMeta(pathname) {
     const product = productById[productMatch[1]]
     return product ? {
       title: `${product.name} | FashionXpress`,
-      description: `${product.description} Explore this ${product.rarity.toLowerCase()} digital fashion edition.`,
+      description: `${product.description} Explore this ${product.releaseTier.toLowerCase()} piece with clear Naira pricing and an illustrative planned licence allocation.`,
     } : ROUTE_META['/collections']
   }
 
-  const mintMatch = normalizedPath.match(/^\/mint\/([^/]+)$/)
+  const mintMatch = normalizedPath.match(/^\/collectibles\/([^/]+)$/)
   if (mintMatch) {
     const product = productById[mintMatch[1]]
     return {
-      title: `${product?.name ?? 'Mint'} Prototype | FashionXpress`,
-      description: 'Review the non-transactional FashionXpress mint interface prototype.',
+      title: `${product?.name ?? 'Collectible'} Lab | FashionXpress`,
+      description: 'Explore a local educational collectible simulation with no wallet connection, blockchain activity, token, or ownership transfer.',
     }
   }
 
-  const mintCompleteMatch = normalizedPath.match(/^\/mint\/([^/]+)\/complete$/)
+  const mintCompleteMatch = normalizedPath.match(/^\/collectibles\/([^/]+)\/complete$/)
   if (mintCompleteMatch) {
     const product = productById[mintCompleteMatch[1]]
     return {
-      title: `${product?.name ?? 'Mint'} Demo Complete | FashionXpress`,
-      description: 'Review a local mint simulation record. No wallet, token, smart contract, or blockchain transaction exists.',
+      title: `${product?.name ?? 'Collectible'} Demo Complete | FashionXpress`,
+      description: 'Review a local demo collectible record. No wallet, token, smart contract, ownership, or blockchain transaction exists.',
     }
   }
 

@@ -34,8 +34,7 @@ export function deriveMintMetadata(productId, licence = 'personal') {
     mediaType: 'image/jpeg',
     identifier: `demo:metadata:${product.id}`,
     attributes: [
-      ['Rarity concept', product.rarity],
-      ['Concept score', `${product.score}/100`],
+      ['Release tier', product.releaseTier],
       ['Format', 'Digital wearable preview'],
     ],
   }
@@ -109,7 +108,7 @@ export function readMintAssets(storage) {
     const raw = target?.getItem(MINT_ASSETS_KEY)
     if (!raw) return []
     const parsed = JSON.parse(raw)
-    if (!Array.isArray(parsed) || parsed.length > 20 || !parsed.every(validAsset) || new Set(parsed.map((asset) => asset.token)).size !== parsed.length || new Set(parsed.map((asset) => asset.assetId)).size !== parsed.length) throw new Error('Invalid Demo Vault data.')
+    if (!Array.isArray(parsed) || parsed.length > 20 || !parsed.every(validAsset) || new Set(parsed.map((asset) => asset.token)).size !== parsed.length || new Set(parsed.map((asset) => asset.assetId)).size !== parsed.length) throw new Error('Invalid Collectibles Lab data.')
     return parsed
   } catch {
     try { storageOrDefault(storage)?.removeItem(MINT_ASSETS_KEY) } catch { /* Safe empty fallback. */ }
@@ -118,7 +117,7 @@ export function readMintAssets(storage) {
 }
 
 export function completeDemoMint(draft, storage, completedAt = new Date().toISOString()) {
-  if (!validDraft(draft, draft?.productId) || draft.step !== 'progress' || draft.highestStep < 4 || draft.progressIndex < 4 || !draft.walletActive || !draft.acknowledged) throw new Error('Complete the earlier demo mint steps first.')
+  if (!validDraft(draft, draft?.productId) || draft.step !== 'progress' || draft.highestStep < 4 || draft.progressIndex < 4 || !draft.walletActive || !draft.acknowledged) throw new Error('Complete the earlier demo collectible steps first.')
   const assets = readMintAssets(storage)
   const previous = assets.find((asset) => asset.token === draft.token)
   if (previous) return previous
@@ -129,7 +128,7 @@ export function completeDemoMint(draft, storage, completedAt = new Date().toISOS
     if (!target) throw new Error('No session storage')
     target.setItem(MINT_ASSETS_KEY, JSON.stringify([...assets, asset].slice(-20)))
     return asset
-  } catch { throw new Error('Demo Vault storage is unavailable. Nothing was created.') }
+  } catch { throw new Error('Collectibles Lab storage is unavailable. Nothing was created.') }
 }
 
 export function removeMintAsset(assetId, storage) {

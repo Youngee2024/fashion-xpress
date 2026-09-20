@@ -13,7 +13,7 @@
 | Stack | React 19, React Router 7, Vite 7, Tailwind CSS 4, Vercel |
 | Prepared services | Supabase and Resend integrations, inactive until Live Mode is deliberately configured |
 
-FashionXpress brings fashion discovery, conceptual ownership journeys, on-device styling and creative community into one editorial interface. The work is presented as a functioning prototype rather than a fictional production marketplace.
+FashionXpress brings African fashion discovery, Naira-priced licence selection, on-device styling and creative community into one editorial interface, with blockchain collecting retained only as an optional educational Lab.
 
 ## My role
 
@@ -33,12 +33,12 @@ The repository history remains the source of truth for implementation phases and
 
 ## Challenge
 
-The initial experience was distributed across legacy HTML pages with inconsistent navigation and limited shared behavior. The larger design challenge was not simply modernization: it was making speculative ideas such as digital ownership, minting and virtual try-on feel complete without implying unavailable technology.
+The initial experience was distributed across legacy HTML pages with inconsistent navigation and limited shared behavior. The larger design challenge was not simply modernization: it was building a credible licence-based commerce journey while keeping speculative collecting and Virtual Try-On honest about unavailable technology.
 
 The resulting product needed to:
 
 - Preserve a high-fashion editorial character across many routes.
-- Connect discovery, product, bag, checkout, vault, mint and community journeys.
+- Connect discovery, product, bag, licence-first checkout, Digital Wardrobe, Virtual Try-On and Community journeys.
 - Work at compact mobile widths without hiding layout problems.
 - Make every simulated outcome honest and understandable.
 - Keep personal data and provider credentials out of the public Demo experience.
@@ -52,7 +52,7 @@ Create a digital fashion house where African creative direction is presented wit
 
 ## Audience
 
-The primary portfolio audience is recruiters, product teams and UI/UX clients evaluating product thinking and implementation quality. Within the concept itself, the experience speaks to digital-fashion creators, collectors and culture-focused visitors who want expressive discovery without technical ambiguity.
+The primary portfolio audience is recruiters, product teams and UI/UX clients evaluating product thinking and implementation quality. Within the concept itself, the experience speaks to creators, digital wearers and culture-focused visitors who want expressive discovery without technical ambiguity.
 
 ## Design principles
 
@@ -66,7 +66,7 @@ The primary portfolio audience is recruiters, product teams and UI/UX clients ev
 
 The visual system uses charcoal black as a gallery-like ground, warm cream for contrast and acid lime for active moments. Oversized sans-serif headlines are paired with italic serif phrases to create an editorial rhythm. Fine rules, compact uppercase labels and disciplined spacing keep functional areas precise.
 
-The imagery is allowed to lead, but product-detail media uses full-body framing so the model and garment are not cropped at the head. Dense interfaces such as checkout and Mint Studio use quiet panels and a consistent step language rather than changing the brand tone.
+The imagery is allowed to lead, but product-detail media uses full-body framing so the model and garment are not cropped at the head. Dense interfaces such as checkout and Collectibles Lab use quiet panels and a consistent step language rather than changing the brand tone.
 
 | Desktop editorial scale | Compact mobile hierarchy |
 | --- | --- |
@@ -78,7 +78,8 @@ The application is organised around five connected areas:
 
 - **Discover:** Home, Collections and product detail.
 - **Experience:** Virtual Try-On and product-specific concept entry points.
-- **Collect locally:** Bag, Demo Checkout, Mint Studio and Demo Vault.
+- **Build a Wardrobe:** Bag, licence-first Demo Checkout and Digital Wardrobe.
+- **Explore optionally:** Collectibles Lab, clearly separated from commerce.
 - **Participate:** Community, discussions, profiles and creator introduction.
 - **Trust:** About, Contact, Privacy, Terms, Licensing, Purchase Status and Accessibility.
 
@@ -88,35 +89,35 @@ Shared navigation keeps these areas reachable, while contextual actions carry a 
 
 ### Fashion discovery
 
-The home page establishes the world before asking for action. Collections then presents exactly nine trusted product records with search, rarity and sort controls. Product cards keep concept pricing and prototype status visible rather than treating the collection as live inventory.
+The home page establishes the world before asking for action. Collections then presents nine trusted product records with search, release-tier filters and Naira sorting. Product cards show planned licence allocations while making clear they are illustrative rather than live inventory.
 
 ![FashionXpress collection with filters and prototype disclosure](assets/collections.jpg)
 
 ### Product detail
 
-The detail view gives a selected garment enough vertical space for the full editorial shot, then groups story, concept rarity and format information with actions for the bag, Virtual Try-On and Mint Studio. Invalid product IDs recover to a safe collection path.
+The detail view gives a selected garment enough vertical space for the full editorial shot, then groups story, release tier, planned allocation and format information. Add to bag and Virtual Try-On lead; Collectibles Lab appears as a separate secondary link.
 
 ![Neo-Safari 2026 product detail with full-body editorial image](assets/product-detail.jpg)
 
 ### Cart and demo checkout
 
-The accessible cart drawer supports quantity changes and restores focus when closed. Checkout then moves through bag review, fictional identity, concept licence, a payment-free demonstration and final review. Completion creates a session-only receipt and states that no payment, order, ownership or licence transfer occurred.
+The accessible cart drawer supports quantity changes and restores focus when closed. Checkout then moves through bag review, digital-use licence selection, a demo customer profile, payment-free demonstration and order review. Completion creates a session-only Digital Wardrobe record and states that no payment, order or legal licence transfer occurred.
 
 ![Final review step showing concept totals and no-transaction disclosure](assets/checkout.jpg)
 
-### Demo Wallet and minting
+### Optional Collectibles Lab
 
-Mint Studio derives metadata from trusted product data, uses a clearly fictional Demo Wallet and offers concept networks with deterministic demo-unit calculations. Before completion, the visitor acknowledges that no wallet permission, signature, gas charge, contract execution, publication, token or transfer will occur.
+Collectibles Lab derives metadata from trusted product data, uses a clearly fictional Demo Wallet and offers concept networks with deterministic demo-unit calculations. It is separate from Naira commerce. Before completion, the visitor acknowledges that no wallet permission, signature, gas charge, contract execution, publication, token or transfer will occur.
 
 The progress sequence is labelled as a visual simulation. Stable `demo:` identifiers are stored only for the browser session.
 
-![Mint Studio metadata review for a selected product](assets/mint-studio.jpg)
+![Earlier collectible metadata screen; refresh required to show the Collectibles Lab label](assets/mint-studio.jpg)
 
-### Demo Vault
+### Digital Wardrobe and local collectible records
 
-Checkout concepts and mint simulations share one vault, but each record type is visually and verbally distinct. Corrupt records are discarded, individual mint records can be removed, and the entire vault can be reset with confirmation. Nothing in the vault implies transferable value.
+Digital Wardrobe contains only checkout-derived Naira records. Optional demo collectibles live and can be reset independently inside Collectibles Lab. Both stores reject corrupt records, but their totals, references and meanings never mix.
 
-![Demo Vault separating checkout concepts from mint simulations](assets/demo-vault.jpg)
+![Earlier combined vault screen; refresh required to show the separated Digital Wardrobe](assets/demo-vault.jpg)
 
 ### Local Virtual Try-On
 
@@ -170,8 +171,8 @@ Formal testing with multiple screen readers and physical devices remains a launc
 
 | Area | What the interface does | What it does not claim |
 | --- | --- | --- |
-| Checkout | Calculates deterministic concept totals and stores a local receipt | Payment, order, fulfilment, ownership or licence transfer |
-| Minting | Demonstrates metadata, wallet, network and progress states | Wallet connection, signature, gas charge, contract execution or token creation |
+| Checkout | Calculates deterministic Naira licence totals and stores a local Wardrobe record | Payment, order, fulfilment, inventory reservation or legal licence transfer |
+| Collectibles Lab | Demonstrates metadata, wallet, network and progress states separately | Wallet connection, signature, gas charge, contract execution or token creation |
 | Try-On | Composes a local garment overlay | Body tracking, biometric analysis, fit or size accuracy |
 | Community | Demonstrates publishing interactions in memory | Online publication, moderation response or persistent identity |
 | Forms | Validates and demonstrates completion | Sending, subscribing or storing personal submissions in Demo Mode |
@@ -180,9 +181,9 @@ Live Mode does not silently fall back to a Demo success. If configuration is inc
 
 ## Technical implementation
 
-React Router maps route-level pages into a shared layout. Central product records prevent detail, checkout, mint and try-on views from drifting apart. Data utilities own input validation, integer calculations, storage namespaces and corrupt-state recovery; components focus on presentation and interaction.
+React Router maps route-level pages into a shared layout. Central product records prevent detail, checkout, Collectibles Lab and Try-On views from drifting apart. Data utilities own input validation, integer calculations, storage namespaces and corrupt-state recovery; components focus on presentation and interaction.
 
-The persistent bag stores only product IDs and quantities in `localStorage`. Checkout and mint records use `sessionStorage`; Demo Community identity and activity stay in memory. Virtual Try-On uses browser media and canvas APIs, revokes local object URLs and stops camera tracks when they are no longer needed.
+The persistent bag stores only product IDs and quantities in `localStorage`. Digital Wardrobe and Collectibles Lab use separate `sessionStorage` namespaces; Demo Community identity and activity stay in memory. Virtual Try-On uses browser media and canvas APIs, revokes local object URLs and stops camera tracks when they are no longer needed.
 
 Prepared Live functions restrict methods and content types, validate payloads, apply abuse controls and avoid logging personal submissions. Supabase migrations enable RLS and separate browser-readable Community data from privileged submission tables. Vercel routing excludes `/api`, assets and public images from the SPA fallback.
 
@@ -207,7 +208,7 @@ Provider behavior is intentionally outside the verified public claim: real Supab
 
 ## Final outcome
 
-FashionXpress is now a cohesive Demo Mode product story rather than a collection of disconnected concepts. The application demonstrates discovery, local commerce, fictional minting, manual try-on and community participation in a consistent interface, with accessible states and clear safety boundaries.
+FashionXpress is now a cohesive Demo Mode e-commerce story rather than a collection of disconnected concepts. The application demonstrates Naira-priced discovery, licence-first checkout, Digital Wardrobe, manual Try-On and Community participation, while keeping collectible education optional and clearly separated.
 
 The outcome is a portfolio-ready artifact and a prepared technical foundation, not evidence of customers, revenue, production transactions or market adoption.
 

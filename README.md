@@ -1,6 +1,6 @@
 # FashionXpress
 
-**African digital fashion, explored through an honest local-first portfolio prototype.**
+**African digital fashion with Naira pricing, licence-based access, and an honest local-first portfolio experience.**
 
 ![FashionXpress portfolio cover showing the desktop home page and two mobile interface views](docs/assets/fashionxpress-cover.jpg)
 
@@ -16,7 +16,7 @@
 
 ## Project overview
 
-FashionXpress is a responsive digital-fashion concept that combines editorial discovery, prototype commerce, community participation and on-device creative tools. It began as a set of static legacy pages and now runs as a modular React application with shared data, accessible interactions and explicit boundaries between demonstration behavior and real services.
+FashionXpress is an African digital-fashion e-commerce concept combining editorial discovery, clear Naira pricing, digital-use licences, Virtual Try-On, creator experiences, Community, and an optional Collectibles Lab. It began as static legacy pages and now runs as a modular React application with shared data, accessible interactions, and explicit boundaries between demonstration behavior and real services.
 
 The experience is designed to feel ambitious without pretending that a payment, blockchain transaction, body-tracking system or live publication occurred.
 
@@ -34,26 +34,26 @@ The redesign treats the product as a fashion editorial first. Large typography, 
 
 - Recruiters and product teams reviewing end-to-end UI/UX and frontend craft
 - Digital-fashion creators exploring new presentation formats
-- Collectors and culture-focused visitors browsing conceptual garments
+- Digital wearers and culture-focused visitors exploring expressive garments
 - Designers and developers evaluating accessible, safety-conscious prototypes
 
 ## Core experiences
 
 | Experience | What a visitor can do |
 | --- | --- |
-| Fashion discovery | Browse a nine-piece collection, filter concepts and open detailed editorial views. |
-| Bag and checkout | Change quantities, choose concept licences and complete a local checkout demonstration. |
-| Demo Wallet and minting | Review trusted metadata, activate a fictional wallet and create a session-only concept asset. |
+| Fashion discovery | Browse nine pieces by release tier and planned licence allocation, then open detailed editorial views. |
+| Bag and checkout | Change quantities, choose digital-use licences and complete a local Naira checkout demonstration. |
+| Collectibles Lab | Optionally review metadata, activate a fictional Demo Wallet and create a session-only demo collectible. |
 | Virtual Try-On | Use a camera or local image, position a garment manually and download the local composition. |
 | Community | Enter with a fictional identity, create discussions, reply, like and preview reporting locally. |
 | Creator and contact flows | Complete validation and reach an explicit unsent Demo completion state. |
-| Demo Vault | Review checkout concepts and simulated mint records for the current browser session. |
+| Digital Wardrobe | Review session-only Naira checkout records and selected illustrative licences. |
 
 ## Demo Mode
 
 `VITE_APP_MODE=demo` is the safe default. Missing or invalid values also resolve to Demo Mode.
 
-In this mode, Contact, Creator Application and Newsletter validate normally but make no API request, send no email and create no database record. Community activity stays in memory. Checkout and mint records are session-only. Virtual Try-On processing stays on the device. The bag alone uses namespaced local storage so quantities survive a return visit.
+In this mode, Contact, Creator Application and Newsletter validate normally but make no API request, send no email and create no database record. Community activity stays in memory. Checkout and optional Collectibles Lab records are separate and session-only. Virtual Try-On processing stays on the device. The bag alone uses namespaced local storage so quantities survive a return visit.
 
 Demo completion is not presented as a real transaction. The interface explicitly states that there is no payment, order, wallet connection, blockchain transaction, token, ownership transfer, body tracking or online Community publication.
 
@@ -63,7 +63,7 @@ Demo completion is not presented as a real transaction. The interface explicitly
 
 | Collection discovery | Product detail |
 | --- | --- |
-| ![Collection interface with filters and concept-price disclosure](docs/assets/collections.jpg) | ![Product detail page showing an uncropped full-body editorial image](docs/assets/product-detail.jpg) |
+| ![Collection interface with release-tier filters and Naira pricing](docs/assets/collections.jpg) | ![Product detail page showing an uncropped full-body editorial image](docs/assets/product-detail.jpg) |
 
 | Demo checkout | Local Virtual Try-On |
 | --- | --- |
@@ -75,8 +75,8 @@ More screens and the full product narrative are available in the [case study](do
 
 - **Truth before spectacle:** each simulated action is paired with plain-language consequences.
 - **Editorial hierarchy:** expressive display type leads; dense controls stay structured and quiet.
-- **Progressive journeys:** checkout and minting use guarded steps, visible progress and recoverable state.
-- **One coherent vault:** checkout concepts and mint simulations share a clearly differentiated Demo Vault.
+- **Progressive journeys:** checkout and the optional Collectibles Lab use guarded steps, visible progress and recoverable state.
+- **Clear separation:** Naira checkout records belong to Digital Wardrobe; collectible simulations remain inside Collectibles Lab.
 - **Local creative control:** Virtual Try-On uses manual positioning instead of implying unavailable body tracking.
 - **Useful failure states:** invalid routes, unavailable services, corrupt session data and empty collections recover safely.
 
@@ -112,7 +112,7 @@ supabase/           # Reviewed migrations and policy checks
 docs/               # Setup guides, case study and launch material
 ```
 
-Trusted product data feeds collection, product, checkout, mint and try-on views. Demo utilities validate stored records before use and discard corrupt data. Mode selection is centralised, while provider-backed code remains separated behind Live configuration checks.
+Trusted product data feeds collection, product, checkout, Collectibles Lab and Try-On views. Demo utilities validate stored records before use and discard corrupt data. Mode selection is centralised, while provider-backed code remains separated behind Live configuration checks.
 
 ## Demo versus Live capability
 
@@ -123,7 +123,7 @@ Trusted product data feeds collection, product, checkout, mint and try-on views.
 | Authentication | Fictional in-memory Runway Guest | Prepared Supabase email OTP |
 | Community | In-memory posts, replies, likes and report previews | Prepared RLS-protected Supabase publishing |
 | Checkout | Local interface demonstration; no payment or order | No real checkout implementation |
-| Minting | Fictional wallet and session-only records | No real wallet, smart contract or blockchain implementation |
+| Collectibles Lab | Fictional wallet and session-only demo records | No real wallet, smart contract or blockchain implementation |
 | Virtual Try-On | On-device camera/photo composition and download | No server upload, body tracking or fit assessment |
 
 Live workflows fail closed when required configuration is unavailable; they never substitute simulated success. Provider setup and real-environment verification are still required before any Live activation.
@@ -178,7 +178,7 @@ Provider-backed Live behavior still requires isolated Supabase, Resend and Verce
 
 - Demo forms keep personal input in component memory and clear it after acknowledgement.
 - Demo Community data stays in memory and is not published.
-- Checkout and mint records use validated, session-only namespaces with reset controls.
+- Digital Wardrobe and Collectibles Lab records use separate, validated session-only namespaces with reset controls.
 - Virtual Try-On does not upload photos or derive biometric measurements.
 - Server credentials are excluded from frontend variables and browser bundles.
 - Live API routes restrict methods and content types, validate input and return safe public errors.

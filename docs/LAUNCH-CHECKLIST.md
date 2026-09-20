@@ -6,7 +6,7 @@ This checklist packages the public project as a truthful Demo Mode portfolio pie
 
 **Repository description**
 
-> Editorial React portfolio prototype for African digital fashion, with accessible local checkout, minting, Community and Virtual Try-On journeys.
+> African digital-fashion e-commerce prototype with Naira pricing, licence-based access, Virtual Try-On, Community and an optional Collectibles Lab.
 
 **Website URL**
 
@@ -50,12 +50,12 @@ GitHub does not automatically use the application's Open Graph image as the repo
 
 - [ ] On a physical mobile device, check Home, Collections, Product Detail and navigation at approximately 393px width.
 - [ ] Add a product, update its quantity and refresh to confirm the namespaced bag persists.
-- [ ] Complete Demo Checkout and confirm no payment or order is claimed.
-- [ ] Complete Mint Studio and confirm the Demo Wallet, `demo:` identifiers and “not on-chain” language remain visible.
+- [ ] Complete licence-first Demo Checkout and confirm the Naira total creates only a local Digital Wardrobe record.
+- [ ] Open the optional Collectibles Lab and confirm the Demo Wallet, `demo:` identifiers and “not on-chain” language remain visible.
 - [ ] Enter Demo Community, add and like a local discussion, then confirm no online publication is claimed.
 - [ ] Test Virtual Try-On camera permission: allow, deny and retry. Confirm the camera stops after leaving the page.
 - [ ] Test local-photo Try-On and confirm the composition downloads locally without an upload request.
-- [ ] Reset the Demo Vault and Demo Community, then confirm their empty states are clear.
+- [ ] Reset Digital Wardrobe, Collectibles Lab and Demo Community independently, then confirm their empty states are clear.
 
 ### Deployment and security check
 
@@ -70,7 +70,7 @@ GitHub does not automatically use the application's Open Graph image as the repo
 
 ### Metadata and final editorial review
 
-- [ ] Confirm the browser title and description change on Home, Collections, Product Detail, Checkout, Mint Studio, Community and Try-On.
+- [ ] Confirm the browser title and description change on Home, Collections, Product Detail, Checkout, Digital Wardrobe, Collectibles Lab, Community and Try-On.
 - [ ] Inspect the deployed page source for Open Graph and Twitter/X card defaults.
 - [ ] Confirm the canonical URL follows the deployed origin and current route.
 - [ ] Confirm `/images/social-preview.jpg` loads from the deployed site.
@@ -104,7 +104,7 @@ GitHub does not automatically use the application's Open Graph image as the repo
 
 ### Additional presentation
 
-- [ ] Add a 30-60 second walkthrough showing Home, Product Detail, Checkout, Mint, Try-On and Community.
+- [ ] Add a 30-60 second walkthrough showing Home, Product Detail, Checkout, Digital Wardrobe, Try-On, Community and the optional Collectibles Lab.
 - [ ] Add a concise architecture image only if it improves an interview presentation.
 - [ ] Prepare a short explanation of why Demo and Live capabilities are separated.
 

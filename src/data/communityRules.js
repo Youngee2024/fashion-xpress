@@ -1,5 +1,6 @@
 export const COMMUNITY_CATEGORIES = ['Marketplace', 'Tools', 'Showcase', 'Technology', 'General']
 export const PROFILE_IDENTITIES = ['Creator', 'Collector', 'Community Member']
+export function displayIdentity(identity) { return identity === 'Collector' ? 'Fashion Enthusiast' : identity }
 export const PRESET_AVATARS = ['acid', 'cream', 'ember', 'violet']
 export const REPORT_REASONS = ['Spam', 'Harassment', 'Hate or abuse', 'Unsafe content', 'Other']
 export const PAGE_SIZE = 6

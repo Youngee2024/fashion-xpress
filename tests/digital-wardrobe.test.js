@@ -18,13 +18,18 @@ function memoryStorage(initial = {}) {
   }
 }
 
-test('Digital Wardrobe source exposes required receipt details, actions and separated collectible copy', async () => {
+test('Digital Wardrobe contains only commerce records and links to the separate Collectibles Lab', async () => {
   const source = await readFile(new URL('../src/pages/DemoVault.jsx', import.meta.url), 'utf8')
   for (const label of ['Quantity', 'Digital-use licence', 'Base price', 'Licence-adjusted price', 'Line total', 'Demo order reference', 'Demo order date']) assert.match(source, new RegExp(label))
   assert.match(source, /Demo licence.not transferred/)
   for (const action of ['View product', 'Open Virtual Try-On', 'View licence explanation', 'Continue shopping', 'Reset Digital Wardrobe']) assert.match(source, new RegExp(action))
-  assert.match(source, /Legacy demo collectibles/)
-  assert.match(source, /not Wardrobe purchases, owned assets, NFTs, or Naira orders/)
+  assert.match(source, /Looking for your demo collectibles/)
+  assert.match(source, /to="\/collectibles"/)
+  assert.doesNotMatch(source, /readMintAssets|removeMintAsset|asset\.edition|transactionReference/)
+  const lab = await readFile(new URL('../src/pages/Collectibles.jsx', import.meta.url), 'utf8')
+  assert.match(lab, /readMintAssets/)
+  assert.match(lab, /Your demo collectibles/)
+  assert.match(lab, /not Naira purchases, Wardrobe items/)
 })
 
 test('checkout receipts and mint simulations remain in independent schemas and totals', () => {
