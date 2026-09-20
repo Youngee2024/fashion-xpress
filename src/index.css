@@ -75,7 +75,7 @@ h1 em, h2 em { color: #c9ff38; font-family: Georgia, serif; font-weight: 400; }
 .section-heading h2, .manifesto h2, .story-grid h2 { font-size: clamp(2.8rem,5.2vw,5rem); margin: 1rem 0; }
 .section-heading p { color: #8f8f95; max-width: 590px; line-height: 1.7; }
 .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem 1.25rem; }
-.product-image { position: relative; display: block; aspect-ratio: .72; overflow: hidden; background: #1b1b1d; }
+.product-image { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: #1b1b1d; }
 .product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
 .product-card:hover img { transform: scale(1.035); }
 .rarity { position: absolute; top: 14px; left: 14px; background: rgba(9,9,11,.78); backdrop-filter: blur(7px); padding: .5rem .7rem; font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; }
@@ -421,7 +421,7 @@ footer { grid-template-columns:2fr repeat(3,1fr); }
   .filter-bar select { width:100%; min-width:0; }
   .collection-summary { gap:.6rem; }
   .collection-body .product-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:2rem .75rem; }
-  .collection-body .product-image { aspect-ratio:.72; }
+  .collection-body .product-image { aspect-ratio:4 / 5; }
   .collection-body .product-copy { display:grid; gap:.6rem; }
   .collection-body .product-price { display:flex; align-items:center; justify-content:space-between; text-align:left; }
   .collection-body .product-price button { margin-top:0; }

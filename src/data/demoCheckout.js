@@ -1,4 +1,4 @@
-import { productById } from './products.js'
+import { productById, products } from './products.js'
 
 export const CHECKOUT_DRAFT_KEY = 'fashionxpress.demoCheckout.v1'
 export const DEMO_COLLECTION_KEY = 'fashionxpress.demoCollection.v1'
@@ -22,7 +22,7 @@ export function formatConceptUnits(units) {
 }
 
 export function validDemoItems(items) {
-  return Array.isArray(items) && items.length > 0 && items.length <= 6 && items.every((item) => productById[item?.id] && Number.isInteger(item.quantity) && item.quantity >= 1 && item.quantity <= 99 && licenceById[item.licence]) && new Set(items.map((item) => item.id)).size === items.length
+  return Array.isArray(items) && items.length > 0 && items.length <= products.length && items.every((item) => productById[item?.id] && Number.isInteger(item.quantity) && item.quantity >= 1 && item.quantity <= 99 && licenceById[item.licence]) && new Set(items.map((item) => item.id)).size === items.length
 }
 
 export function cartSnapshot(cart) {

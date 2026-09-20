@@ -41,7 +41,7 @@ The redesign treats the product as a fashion editorial first. Large typography, 
 
 | Experience | What a visitor can do |
 | --- | --- |
-| Fashion discovery | Browse a six-piece collection, filter concepts and open detailed editorial views. |
+| Fashion discovery | Browse a nine-piece collection, filter concepts and open detailed editorial views. |
 | Bag and checkout | Change quantities, choose concept licences and complete a local checkout demonstration. |
 | Demo Wallet and minting | Review trusted metadata, activate a fictional wallet and create a session-only concept asset. |
 | Virtual Try-On | Use a camera or local image, position a garment manually and download the local composition. |
@@ -63,7 +63,7 @@ Demo completion is not presented as a real transaction. The interface explicitly
 
 | Collection discovery | Product detail |
 | --- | --- |
-| ![Six-piece collection with filters and concept-price disclosure](docs/assets/collections.jpg) | ![Product detail page showing an uncropped full-body editorial image](docs/assets/product-detail.jpg) |
+| ![Collection interface with filters and concept-price disclosure](docs/assets/collections.jpg) | ![Product detail page showing an uncropped full-body editorial image](docs/assets/product-detail.jpg) |
 
 | Demo checkout | Local Virtual Try-On |
 | --- | --- |

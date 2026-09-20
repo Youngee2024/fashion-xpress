@@ -88,9 +88,9 @@ Shared navigation keeps these areas reachable, while contextual actions carry a 
 
 ### Fashion discovery
 
-The home page establishes the world before asking for action. Collections then presents exactly six trusted product records with search, category and sort controls. Product cards keep concept pricing and prototype status visible rather than treating the collection as live inventory.
+The home page establishes the world before asking for action. Collections then presents exactly nine trusted product records with search, rarity and sort controls. Product cards keep concept pricing and prototype status visible rather than treating the collection as live inventory.
 
-![Six-product FashionXpress collection with filters and prototype disclosure](assets/collections.jpg)
+![FashionXpress collection with filters and prototype disclosure](assets/collections.jpg)
 
 ### Product detail
 

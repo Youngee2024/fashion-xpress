@@ -12,7 +12,7 @@ FashionXpress is an editorial digital-fashion portfolio prototype that connects 
 
 ## 100-word summary
 
-FashionXpress transforms a legacy fashion website into a responsive React product with a focused editorial identity. Visitors can browse six digital-fashion concepts, open rich product stories, manage a persistent bag, complete a local checkout demonstration, explore fictional minting, style garments with an on-device image tool and participate in a memory-only Community. Every simulated outcome explains what did not happen, including payment, order, wallet connection, blockchain activity, body tracking or online publishing. Accessible navigation, guarded state, responsive layouts and fail-closed Live service boundaries turn an ambitious concept into a credible portfolio case study for product design and frontend engineering roles alike.
+FashionXpress transforms a legacy fashion website into a responsive React product with a focused editorial identity. Visitors can browse nine digital-fashion concepts, open rich product stories, manage a persistent bag, complete a local checkout demonstration, explore fictional minting, style garments with an on-device image tool and participate in a memory-only Community. Every simulated outcome explains what did not happen, including payment, order, wallet connection, blockchain activity, body tracking or online publishing. Accessible navigation, guarded state, responsive layouts and fail-closed Live service boundaries turn an ambitious concept into a credible portfolio case study for product design and frontend engineering roles alike.
 
 ## Full portfolio introduction
 
@@ -48,7 +48,7 @@ FashionXpress uses a shared editorial system and trusted product model to connec
 
 ## Five feature highlights
 
-1. A six-piece, filterable collection linked to dynamic product-detail routes.
+1. A nine-piece, filterable collection linked to dynamic product-detail routes.
 2. An accessible cart drawer and five-step checkout demonstration with concept licences.
 3. A fictional Demo Wallet, deterministic mint calculations and a unified Demo Vault.
 4. An on-device Virtual Try-On editor with camera/photo input, manual controls and local download.
@@ -118,7 +118,7 @@ Editorial React portfolio prototype for African digital fashion, with accessible
 ## GitHub profile project-card copy
 
 **FashionXpress**  
-Responsive digital-fashion case study built with React. Explore six editorial concepts, Demo Checkout, fictional minting, local Virtual Try-On and a memory-only Community - with accessible interactions and transparent prototype boundaries.
+Responsive digital-fashion case study built with React. Explore nine editorial concepts, Demo Checkout, fictional minting, local Virtual Try-On and a memory-only Community - with accessible interactions and transparent prototype boundaries.
 
 ## Suggested social-preview alt text
 
