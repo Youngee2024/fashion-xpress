@@ -16,7 +16,7 @@
 
 ## Project overview
 
-FashionXpress is an African digital-fashion e-commerce concept combining editorial discovery, clear Naira pricing, digital-use licences, Virtual Try-On, creator experiences, Community, and an optional Collectibles Lab. It began as static legacy pages and now runs as a modular React application with shared data, accessible interactions, and explicit boundaries between demonstration behavior and real services.
+FashionXpress is a polished African digital-fashion e-commerce portfolio prototype combining editorial discovery, clear Naira pricing, digital-use licences, Virtual Try-On, creator experiences, Community, and an optional Collectibles Lab. It began as static legacy pages and now runs as a modular React application with shared data, accessible interactions, and explicit boundaries between demonstration behavior and real services.
 
 The experience is designed to feel ambitious without pretending that a payment, blockchain transaction, body-tracking system or live publication occurred.
 
@@ -68,6 +68,10 @@ Demo completion is not presented as a real transaction. The interface explicitly
 | Demo checkout | Local Virtual Try-On |
 | --- | --- |
 | ![Final review step of the non-transactional checkout demonstration](docs/assets/checkout.jpg) | ![On-device Virtual Try-On editor with a manually positioned garment layer](docs/assets/virtual-try-on.jpg) |
+
+| Digital Wardrobe | Optional Collectibles Lab |
+| --- | --- |
+| ![Session-only Digital Wardrobe with a Naira demo checkout record](docs/assets/digital-wardrobe.jpg) | ![Collectibles Lab separated from the primary commerce journey](docs/assets/collectibles-lab.jpg) |
 
 More screens and the full product narrative are available in the [case study](docs/CASE-STUDY.md).
 

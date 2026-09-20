@@ -6,7 +6,7 @@
 
 | | |
 | --- | --- |
-| Product | Responsive digital-fashion portfolio prototype |
+| Product | Polished African digital-fashion e-commerce portfolio prototype |
 | Focus | UI/UX design, frontend architecture, accessibility and prototype integrity |
 | Public state | Demo Mode |
 | Platform | Responsive web application |
@@ -111,13 +111,13 @@ Collectibles Lab derives metadata from trusted product data, uses a clearly fict
 
 The progress sequence is labelled as a visual simulation. Stable `demo:` identifiers are stored only for the browser session.
 
-![Earlier collectible metadata screen; refresh required to show the Collectibles Lab label](assets/mint-studio.jpg)
+![Collectibles Lab landing page with explicit local-simulation disclosures](assets/collectibles-lab.jpg)
 
 ### Digital Wardrobe and local collectible records
 
 Digital Wardrobe contains only checkout-derived Naira records. Optional demo collectibles live and can be reset independently inside Collectibles Lab. Both stores reject corrupt records, but their totals, references and meanings never mix.
 
-![Earlier combined vault screen; refresh required to show the separated Digital Wardrobe](assets/demo-vault.jpg)
+![Digital Wardrobe containing a session-only Naira demo checkout record](assets/digital-wardrobe.jpg)
 
 ### Local Virtual Try-On
 

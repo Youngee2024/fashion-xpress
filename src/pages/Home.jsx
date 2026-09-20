@@ -6,7 +6,7 @@ import { ProductCard } from '../components/ProductCard'
 import { SafeImage } from '../components/SafeImage'
 import { products } from '../data/products'
 
-const features = ['Creator-led', 'Limited concepts', 'Camera exploration', 'Global perspective']
+const features = ['Creator-led', 'Licence-first', 'Camera exploration', 'Global perspective']
 
 export function Home({ onAdd }) {
   return <>

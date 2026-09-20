@@ -21,7 +21,7 @@ const ROUTE_META = {
   '/profile/edit': { title: 'Edit Profile | FashionXpress', description: 'Edit your public FashionXpress Community profile and account settings.' },
   '/community-guidelines': { title: 'Community Guidelines | FashionXpress', description: 'Read FashionXpress Community conduct, reporting, and moderation limitations.' },
   '/about': { title: 'About FashionXpress', description: 'Discover how FashionXpress connects African creativity, digital craft, and global culture.' },
-  '/contact': { title: 'Contact | FashionXpress', description: 'Find direct contact details for FashionXpress partnerships, collecting, press, and creator support.' },
+  '/contact': { title: 'Contact | FashionXpress', description: 'Explore the FashionXpress contact demonstration for collection questions, partnerships, press, and creator support.' },
   '/get-started': { title: 'Creator Atelier | FashionXpress', description: 'Learn how independent digital fashion creators can work with FashionXpress.' },
   '/privacy': { title: 'Privacy | FashionXpress', description: 'Understand what the FashionXpress portfolio prototype stores locally and what information it never transmits.' },
   '/terms': { title: 'Prototype Terms | FashionXpress', description: 'Read the demonstration terms for exploring the non-commercial FashionXpress portfolio prototype.' },

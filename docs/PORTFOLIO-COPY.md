@@ -4,7 +4,7 @@ Use this copy as a source, then adapt length and tone to the publishing platform
 
 ## One-sentence project description
 
-FashionXpress is an African digital-fashion e-commerce prototype with Naira pricing, licence-based access, Virtual Try-On, creator experiences, Community and an optional Collectibles Lab.
+FashionXpress is a polished African digital-fashion e-commerce portfolio prototype with Naira pricing, digital-use licences, Virtual Try-On, creator experiences, Community and an optional Collectibles Lab.
 
 ## 50-word summary
 

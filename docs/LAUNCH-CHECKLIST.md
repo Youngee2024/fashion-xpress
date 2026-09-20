@@ -6,7 +6,7 @@ This checklist packages the public project as a truthful Demo Mode portfolio pie
 
 **Repository description**
 
-> African digital-fashion e-commerce prototype with Naira pricing, licence-based access, Virtual Try-On, Community and an optional Collectibles Lab.
+> Polished African digital-fashion e-commerce portfolio prototype with Naira pricing, digital-use licences, Virtual Try-On, Community and an optional Collectibles Lab.
 
 **Website URL**
 
@@ -74,6 +74,7 @@ GitHub does not automatically use the application's Open Graph image as the repo
 - [ ] Inspect the deployed page source for Open Graph and Twitter/X card defaults.
 - [ ] Confirm the canonical URL follows the deployed origin and current route.
 - [ ] Confirm `/images/social-preview.jpg` loads from the deployed site.
+- [ ] Confirm the social preview presents Naira commerce, digital-use licences, Virtual Try-On and Digital Wardrobe without implying live transactions.
 - [ ] Test the Live Demo link through a social-card debugger after deployment.
 - [ ] Run a final spelling review across README, case study, portfolio copy and in-app launch metadata.
 - [ ] Confirm all public claims describe verified interface behavior rather than customers, revenue, research or production adoption.
