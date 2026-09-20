@@ -26,7 +26,37 @@ export function Header({ cartCount, onCartOpen }) {
 }
 
 export function Footer() {
-  return <footer><div><Link className="brand" to="/"><span>FX</span> FashionXpress</Link><p>Where culture, code, and couture converge—in a portfolio prototype.</p></div><div><h2>Explore</h2><Link to="/collections">Collections</Link><Link to="/ar-tryon">Virtual try-on</Link><Link to="/community">Community</Link></div><div><h2>Company</h2><Link to="/about">About us</Link><Link to="/contact">Contact</Link><Link to="/get-started">Creator atelier</Link></div><div><h2>Information</h2><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link><Link to="/community-guidelines">Community guidelines</Link><Link to="/licensing">Licensing</Link><Link to="/refund-policy">Purchase status</Link><Link to="/accessibility">Accessibility</Link></div><div className="footer-bottom"><span>© 2026 FashionXpress · Portfolio concept</span><span>Lagos · London · Everywhere</span></div></footer>
+  return <footer>
+    <div className="footer-brand">
+      <Link className="brand" to="/"><span>FX</span> FashionXpress</Link>
+      <p>Where culture, code, and couture converge—in a portfolio prototype.</p>
+    </div>
+    <nav className="footer-group" aria-labelledby="footer-explore">
+      <h2 id="footer-explore">Explore</h2>
+      <Link to="/collections">Collections</Link>
+      <Link to="/ar-tryon">Virtual try-on</Link>
+      <Link to="/community">Community</Link>
+    </nav>
+    <nav className="footer-group" aria-labelledby="footer-company">
+      <h2 id="footer-company">Company</h2>
+      <Link to="/about">About us</Link>
+      <Link to="/contact">Contact</Link>
+      <Link to="/get-started">Creator atelier</Link>
+    </nav>
+    <nav className="footer-group" aria-labelledby="footer-legal">
+      <h2 id="footer-legal">Legal</h2>
+      <Link to="/privacy">Privacy</Link>
+      <Link to="/terms">Terms</Link>
+      <Link to="/licensing">Licensing</Link>
+    </nav>
+    <nav className="footer-group" aria-labelledby="footer-support">
+      <h2 id="footer-support">Support</h2>
+      <Link to="/community-guidelines">Community guidelines</Link>
+      <Link to="/refund-policy">Purchase status</Link>
+      <Link to="/accessibility">Accessibility</Link>
+    </nav>
+    <div className="footer-bottom"><span>© 2026 FashionXpress · Portfolio concept</span><span>Lagos · London · Everywhere</span></div>
+  </footer>
 }
 
 export function Layout({ children, cartCount, onCartOpen }) {
