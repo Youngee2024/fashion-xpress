@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { CartDrawer } from './components/CartDrawer'
 import { Layout } from './components/Layout'
@@ -13,7 +13,7 @@ import { Collections } from './pages/Collections'
 import { Checkout, CheckoutComplete } from './pages/Checkout'
 import { Community } from './pages/Community'
 import { Discussion } from './pages/Discussion'
-import { DemoVault } from './pages/DemoVault'
+import { DigitalWardrobe } from './pages/DemoVault'
 import { AuthPage, RequireAuth, VerifyOtpPage } from './pages/AuthPage'
 import { ProfileForm, ProfilePage } from './pages/Profile'
 import { Contact } from './pages/Contact'
@@ -67,7 +67,8 @@ export default function App() {
         <Route path="/collections/:id" element={<ProductDetail onAdd={add} />} />
         <Route path="/checkout" element={<Checkout cart={cart} onQuantityChange={changeQuantity} onRemove={removeFromCart} onCompleted={completeDemoItems} />} />
         <Route path="/checkout/complete" element={<CheckoutComplete onRestart={restartDemoItems} />} />
-        <Route path="/demo-collection" element={<DemoVault />} />
+        <Route path="/digital-wardrobe" element={<DigitalWardrobe />} />
+        <Route path="/demo-collection" element={<Navigate to="/digital-wardrobe" replace />} />
         <Route path="/ar-tryon" element={<ARTryOn />} />
         <Route path="/community" element={<Community />} />
         <Route path="/community/:id" element={<Discussion />} />

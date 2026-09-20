@@ -2,7 +2,7 @@ import { productById } from './products.js'
 
 const DEFAULT_META = {
   title: 'FashionXpress — Digital Fashion, Made Tangible',
-  description: 'Explore African digital fashion through accessible local checkout, minting, Community and Virtual Try-On prototypes.',
+  description: 'Explore African digital fashion through Naira demo checkout, digital-use licences, Community and Virtual Try-On, with a separate optional collectible prototype.',
 }
 
 const ROUTE_META = {
@@ -10,7 +10,8 @@ const ROUTE_META = {
   '/collections': { title: 'Genesis Collection | FashionXpress', description: 'Explore limited-edition digital garments from the FashionXpress Genesis collection.' },
   '/checkout': { title: 'Naira Demo Checkout | FashionXpress', description: 'Choose a digital-use licence and explore a local Naira checkout demonstration. No real payment, order, or licence transfer occurs.' },
   '/checkout/complete': { title: 'Demo Order Confirmation | FashionXpress', description: 'Review a local Naira demo order confirmation; no real order, payment, or digital-use licence was created.' },
-  '/demo-collection': { title: 'Demo Vault | FashionXpress', description: 'View local checkout concepts and mint simulations that are not owned, minted, licensed, published, or stored online.' },
+  '/digital-wardrobe': { title: 'Digital Wardrobe | FashionXpress', description: 'Review session-only Naira checkout records and their illustrative digital-use licences, separated from legacy collectible simulations.' },
+  '/demo-collection': { title: 'Digital Wardrobe | FashionXpress', description: 'Continue to the FashionXpress Digital Wardrobe.' },
   '/ar-tryon': { title: 'Virtual Try-On Prototype | FashionXpress', description: 'Create an on-device manual garment overlay using a camera or local photo. Nothing is uploaded or body-tracked.' },
   '/community': { title: 'Creator Community | FashionXpress', description: 'Join conversations with digital fashion designers, collectors, and creative technologists.' },
   '/auth': { title: 'Community Sign-In | FashionXpress', description: 'Enter the portfolio demo or sign in with a six-digit email code in configured Live Mode.' },

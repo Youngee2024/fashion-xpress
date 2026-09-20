@@ -6,15 +6,15 @@ export const CHECKOUT_DRAFT_KEY = 'fashionxpress.demoCheckout.v1'
 export const DEMO_COLLECTION_KEY = 'fashionxpress.demoCollection.v2'
 export const LEGACY_DEMO_COLLECTION_KEY = 'fashionxpress.demoCollection.v1'
 export const LEGACY_COLLECTION_NOTICE_KEY = 'fashionxpress.demoCollectionLegacyCleared.v1'
-export const CHECKOUT_STEPS = ['bag', 'ownership', 'licence', 'payment', 'review']
+export const CHECKOUT_STEPS = ['bag', 'licence', 'ownership', 'payment', 'review']
 export const DEMO_CUSTOMERS = [
   { id: 'runway-guest', label: 'Runway Guest', description: 'The fictional Demo Community profile.' },
   { id: 'guest-customer', label: 'Studio Guest', description: 'A fictional customer profile; no account or contact details.' },
 ]
 export const DIGITAL_USE_LICENCES = [
-  { id: 'personal', label: 'Personal-use licence', adjustmentPercent: 0, description: 'For private styling and personal display in this demonstration.' },
-  { id: 'social', label: 'Creator/content licence', adjustmentPercent: 20, description: 'For sharing styled images and non-commercial creator content.' },
-  { id: 'extended', label: 'Commercial/extended licence', adjustmentPercent: 50, description: 'For a broader commercial-use concept; no rights are actually granted.' },
+  { id: 'personal', label: 'Personal-use licence', adjustmentPercent: 0, description: 'Base price for personal digital expression.', permissions: ['Personal digital styling', 'Private Virtual Try-On use', 'Personal device and profile use', 'No commercial use', 'No resale or ownership transfer'] },
+  { id: 'social', label: 'Creator/content licence', adjustmentPercent: 20, description: 'Base price plus 20% for creator and content use.', permissions: ['Personal-use permissions', 'Social-media and editorial content', 'Creator portfolio use', 'Monetized personal content where allowed by the final agreement', 'No resale or transfer'] },
+  { id: 'extended', label: 'Commercial/extended licence', adjustmentPercent: 50, description: 'Base price plus 50% for an extended commercial-use concept.', permissions: ['Personal and creator permissions', 'Commercial campaign or brand-content concept', 'Broader usage subject to the final licence agreement', 'No copyright transfer', 'No resale unless separately agreed'] },
 ]
 
 // Compatibility export for the separate collectible simulation until it is repositioned.
@@ -229,5 +229,5 @@ export function completeDemoCheckout(cart, draft, storage, completedAt = new Dat
     if (!target) throw new Error('No session storage')
     target.setItem(DEMO_COLLECTION_KEY, JSON.stringify([...existing, receipt].slice(-10)))
     return receipt
-  } catch { throw new Error('Demo collection storage is unavailable. Your bag has not been cleared.') }
+  } catch { throw new Error('Digital Wardrobe storage is unavailable. Your bag has not been cleared.') }
 }

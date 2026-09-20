@@ -5,7 +5,9 @@ import { normalizeCart, readCart, writeCart } from '../src/data/cartStorage.js'
 import { calculateLicenceUpliftKobo, formatNaira } from '../src/data/commercePricing.js'
 import {
   CHECKOUT_DRAFT_KEY,
+  CHECKOUT_STEPS,
   DEMO_COLLECTION_KEY,
+  DIGITAL_USE_LICENCES,
   LEGACY_COLLECTION_NOTICE_KEY,
   LEGACY_DEMO_COLLECTION_KEY,
   RECEIPT_SCHEMA_VERSION,
@@ -60,6 +62,18 @@ test('the centralized formatter and integer licence uplifts produce exact Naira 
   assert.equal(calculateLicenceUpliftKobo(8500000, 20), 1700000)
   assert.equal(calculateLicenceUpliftKobo(8500000, 50), 4250000)
   assert.throws(() => formatNaira(1.5), /Invalid/)
+})
+
+test('licence-first checkout order and permission copy match the approved structures', () => {
+  assert.deepEqual(CHECKOUT_STEPS, ['bag', 'licence', 'ownership', 'payment', 'review'])
+  assert.deepEqual(DIGITAL_USE_LICENCES.map(({ label, adjustmentPercent }) => [label, adjustmentPercent]), [
+    ['Personal-use licence', 0],
+    ['Creator/content licence', 20],
+    ['Commercial/extended licence', 50],
+  ])
+  assert.deepEqual(DIGITAL_USE_LICENCES[0].permissions, ['Personal digital styling', 'Private Virtual Try-On use', 'Personal device and profile use', 'No commercial use', 'No resale or ownership transfer'])
+  assert.match(DIGITAL_USE_LICENCES[1].permissions.join(' '), /Social-media and editorial content.*Monetized personal content.*No resale or transfer/i)
+  assert.match(DIGITAL_USE_LICENCES[2].permissions.join(' '), /Commercial campaign or brand-content concept.*No copyright transfer.*No resale unless separately agreed/i)
 })
 
 test('checkout applies the licence price before quantity and rejects untrusted selections', () => {
@@ -148,7 +162,7 @@ test('completion rejects skipped or forged states and cart removal uses trusted 
   assert.deepEqual(removeCompletedFromCart(cart, receipt.items), [])
 })
 
-test('Demo Collection recovers safely from corruption and can be reset', () => {
+test('Digital Wardrobe recovers safely from corruption and can be reset', () => {
   const storage = memoryStorage({ [DEMO_COLLECTION_KEY]: '{broken' })
   assert.deepEqual(readDemoCollection(storage), [])
   assert.equal(storage.getItem(DEMO_COLLECTION_KEY), null)
@@ -169,8 +183,9 @@ test('checkout source contains no sensitive payment fields or payment-provider i
 test('checkout routes and metadata remain stable', async () => {
   const app = await readFile(new URL('../src/App.jsx', import.meta.url), 'utf8')
   const meta = await readFile(new URL('../src/data/routeMeta.js', import.meta.url), 'utf8')
-  for (const route of ['/checkout', '/checkout/complete', '/demo-collection']) {
+  for (const route of ['/checkout', '/checkout/complete', '/digital-wardrobe', '/demo-collection']) {
     assert.match(app, new RegExp(`path="${route.replaceAll('/', '\\/')}"`))
     assert.match(meta, new RegExp(`'${route.replaceAll('/', '\\/')}'`))
   }
+  assert.match(app, /path="\/demo-collection" element={<Navigate to="\/digital-wardrobe" replace/)
 })

@@ -9,7 +9,7 @@ import { Icon } from './Icons'
 import { FieldError } from './PrototypeUI'
 import { ConsentField, Honeypot, PortfolioDemoIndicator, ServiceStatus } from './WorkflowUI'
 
-const links = [['/', 'Home'], ['/collections', 'Collections'], ['/ar-tryon', 'Virtual try-on'], ['/community', 'Community'], ['/about', 'About']]
+const links = [['/', 'Home'], ['/collections', 'Collections'], ['/digital-wardrobe', 'Wardrobe'], ['/ar-tryon', 'Virtual try-on'], ['/community', 'Community'], ['/about', 'About']]
 
 export function Header({ cartCount, onCartOpen }) {
   const auth = useAuth()

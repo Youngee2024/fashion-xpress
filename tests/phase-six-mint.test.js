@@ -80,7 +80,7 @@ test('acknowledgement and completed progress are required before idempotent comp
   assert.equal(readMintAssets(storage).length, 1)
 })
 
-test('Demo Vault mint records support individual removal, full reset and corruption recovery', () => {
+test('legacy collectible records support individual removal, full reset and corruption recovery', () => {
   const storage = memoryStorage()
   const ready = { ...freshMintDraft('neo-safari', {}, token), step: 'progress', highestStep: 4, progressIndex: 4, walletActive: true, acknowledged: true }
   const asset = completeDemoMint(ready, storage)

@@ -64,8 +64,8 @@ for (const width of [393, 1440]) {
   assert.equal(identity.count, 1)
   await navigate(null, true)
   assert.equal((await pageState()).heading, 'Demo mint complete.')
-  await click('view in demo vault')
-  assert.equal(await evaluate(`document.querySelector('h1')?.innerText`), 'Demo Vault.')
+  await click('view legacy collectible record')
+  assert.equal(await evaluate(`document.querySelector('h1')?.innerText`), 'Digital Wardrobe.')
   assert.match(await evaluate(`document.querySelector('.vault-asset')?.innerText`), /Not on-chain/)
   assert.equal((await pageState()).overflow, false)
 }
