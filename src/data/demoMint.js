@@ -45,7 +45,7 @@ export function calculateMintSummary(productId, networkId, licence = 'personal')
   const metadata = deriveMintMetadata(productId, licence)
   const network = networkById[networkId]
   if (!network) throw new Error('Unsupported concept network.')
-  return { metadata, network, mintUnits: metadata.product.priceUnits, gasUnits: network.gasUnits, totalUnits: metadata.product.priceUnits + network.gasUnits }
+  return { metadata, network, mintUnits: metadata.product.collectiblePriceUnits, gasUnits: network.gasUnits, totalUnits: metadata.product.collectiblePriceUnits + network.gasUnits }
 }
 
 export function freshMintDraft(productId, options = {}, token = newToken()) {

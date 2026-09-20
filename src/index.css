@@ -83,6 +83,7 @@ h1 em, h2 em { color: #c9ff38; font-family: Georgia, serif; font-weight: 400; }
 .product-copy h3 { margin: 0 0 .3rem; font-size: 1.08rem; letter-spacing: -.02em; }
 .product-copy p { color: #77777e; font-size: .72rem; margin: 0; text-transform: uppercase; letter-spacing: .08em; }
 .product-price { text-align: right; white-space: nowrap; }
+.product-price small { display:block; color:#a9a9b0; font-size:.58rem; font-weight:750; letter-spacing:.08em; text-transform:uppercase; }
 .product-price strong { display: block; font-family: Georgia, serif; font-weight: 400; }
 .product-price button { margin-top: .65rem; width: 32px; height: 32px; display: inline-grid; place-items: center; border: 1px solid #444; background: transparent; color: white; }
 .product-price button:hover { background: #c9ff38; color: #09090b; border-color: #c9ff38; }

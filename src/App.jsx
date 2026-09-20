@@ -52,7 +52,10 @@ export default function App() {
   }
 
   function restartDemoItems(items) {
-    setCart((current) => normalizeCart([...current, ...items.filter((item) => productById[item.id])]))
+    setCart((current) => normalizeCart([...current, ...items.flatMap((item) => {
+      const id = item.productId ?? item.id
+      return productById[id] ? [{ id, quantity: item.quantity }] : []
+    })]))
   }
 
   return <AuthProvider>

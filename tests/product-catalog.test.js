@@ -20,23 +20,23 @@ function memoryStorage(initial = {}) {
 }
 
 const originalProducts = [
-  ['neo-safari', '/images/collection1.jpg', 25],
-  ['quantum-lace', '/images/collection2.jpg', 18],
-  ['solaris-cloak', '/images/collection3.jpg', 32],
-  ['quantum-silk', '/images/collection4.jpg', 28],
-  ['net-xplora', '/images/collection5.jpg', 40],
-  ['lavida-locale', '/images/collection6.jpg', 90],
+  ['neo-safari', '/images/collection1.jpg', 25, 8500000],
+  ['quantum-lace', '/images/collection2.jpg', 18, 6000000],
+  ['solaris-cloak', '/images/collection3.jpg', 32, 12000000],
+  ['quantum-silk', '/images/collection4.jpg', 28, 10000000],
+  ['net-xplora', '/images/collection5.jpg', 40, 15500000],
+  ['lavida-locale', '/images/collection6.jpg', 90, 25000000],
 ]
 
 const newProducts = [
-  { id: 'ancestral-circuit', name: 'Ancestral Circuit', image: '/images/ancestral-circuit.jpg', rarity: 'Rare', stock: 20, price: 3.8, priceUnits: 38, score: 82 },
-  { id: 'lagoon-protocol', name: 'Lagoon Protocol', image: '/images/lagoon-protocol.jpg', rarity: 'Ultra Rare', stock: 5, price: 6.5, priceUnits: 65, score: 94 },
-  { id: 'harmattan-veil', name: 'Harmattan Veil', image: '/images/harmattan-veil.jpg', rarity: 'Limited', stock: 30, price: 2.9, priceUnits: 29, score: 68 },
+  { id: 'ancestral-circuit', name: 'Ancestral Circuit', image: '/images/ancestral-circuit.jpg', rarity: 'Rare', stock: 20, currency: 'NGN', priceKobo: 14500000, collectiblePriceEth: 3.8, collectiblePriceUnits: 38, score: 82 },
+  { id: 'lagoon-protocol', name: 'Lagoon Protocol', image: '/images/lagoon-protocol.jpg', rarity: 'Ultra Rare', stock: 5, currency: 'NGN', priceKobo: 19500000, collectiblePriceEth: 6.5, collectiblePriceUnits: 65, score: 94 },
+  { id: 'harmattan-veil', name: 'Harmattan Veil', image: '/images/harmattan-veil.jpg', rarity: 'Limited', stock: 30, currency: 'NGN', priceKobo: 10500000, collectiblePriceEth: 2.9, collectiblePriceUnits: 29, score: 68 },
 ]
 
 test('catalogue preserves the original six and appends the three exact new records', () => {
   assert.equal(products.length, 9)
-  assert.deepEqual(products.slice(0, 6).map(({ id, image, priceUnits }) => [id, image, priceUnits]), originalProducts)
+  assert.deepEqual(products.slice(0, 6).map(({ id, image, collectiblePriceUnits, priceKobo }) => [id, image, collectiblePriceUnits, priceKobo]), originalProducts)
   assert.deepEqual(products.slice(6).map(({ id }) => id), newProducts.map(({ id }) => id))
 
   for (const expected of newProducts) {
@@ -48,8 +48,10 @@ test('catalogue preserves the original six and appends the three exact new recor
   }
 
   for (const product of products) {
-    assert.equal(Number.isSafeInteger(product.priceUnits), true)
-    assert.equal(product.priceUnits, Math.round(product.price * 10))
+    assert.equal(product.currency, 'NGN')
+    assert.equal(Number.isSafeInteger(product.priceKobo), true)
+    assert.equal(Number.isSafeInteger(product.collectiblePriceUnits), true)
+    assert.equal(product.collectiblePriceUnits, Math.round(product.collectiblePriceEth * 10))
   }
 })
 
@@ -89,13 +91,13 @@ test('Ancestral Circuit persists in the cart and completes checkout with integer
 
   const items = selectionsFromCart(cart, { 'ancestral-circuit': 'social' })
   const totals = calculateDemoTotal(items)
-  assert.deepEqual({ subtotal: totals.subtotalUnits, adjustment: totals.adjustmentUnits, total: totals.totalUnits }, { subtotal: 76, adjustment: 16, total: 92 })
+  assert.deepEqual({ subtotal: totals.subtotalKobo, adjustment: totals.adjustmentKobo, total: totals.totalKobo }, { subtotal: 29000000, adjustment: 5800000, total: 34800000 })
 
   const checkoutStorage = memoryStorage()
   const draft = { ...freshCheckoutDraft(cart, checkoutToken), highestStep: 4, licences: { 'ancestral-circuit': 'social' } }
   const receipt = completeDemoCheckout(cart, draft, checkoutStorage, '2026-09-20T12:00:00.000Z')
-  assert.equal(receipt.items[0].id, 'ancestral-circuit')
-  assert.equal(readDemoCollection(checkoutStorage)[0].items[0].licence, 'social')
+  assert.equal(receipt.items[0].productId, 'ancestral-circuit')
+  assert.equal(readDemoCollection(checkoutStorage)[0].items[0].licenceId, 'social')
   assert.equal(validDemoItems(products.map(({ id }) => ({ id, quantity: 1, licence: 'personal' }))), true)
 })
 
